@@ -2920,6 +2920,1011 @@
           32.75
         ]
       }
+    },
+
+    {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ww1_western_front_001",
+      "properties": {
+        "title": "World War I – Western Front footprint",
+        "location": "French Third Republic / Kingdom of Belgium",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 8000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.5,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_western_front_002",
+      "properties": {
+        "title": "World War I – Western Front footprint",
+        "location": "French Third Republic / Kingdom of Belgium",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 8000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.5,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_western_front_003",
+      "properties": {
+        "title": "World War I – Western Front footprint",
+        "location": "French Third Republic / Kingdom of Belgium",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 8000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.5,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_western_front_004",
+      "properties": {
+        "title": "World War I – Western Front footprint",
+        "location": "French Third Republic / Kingdom of Belgium",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 8000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.5,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_western_front_005",
+      "properties": {
+        "title": "World War I – Western Front footprint",
+        "location": "French Third Republic / Kingdom of Belgium",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 8000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.5,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_001",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_002",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_003",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_004",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_005",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.0,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_006",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.0,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_007",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.0,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_008",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.0,
+          51.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_009",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0,
+          54.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_010",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.0,
+          54.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_011",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.0,
+          54.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_eastern_front_012",
+      "properties": {
+        "title": "World War I – Eastern Front footprint",
+        "location": "Russian Empire / Austria-Hungary / German Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 March 03",
+        "victims_estimated": 9000000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.0,
+          54.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_italian_front_001",
+      "properties": {
+        "title": "World War I – Italian Front footprint",
+        "location": "Kingdom of Italy / Austria-Hungary",
+        "start_date": "1915 May 23",
+        "end_date": "1918 November 04",
+        "victims_estimated": 1500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Italian_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0,
+          45.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_italian_front_002",
+      "properties": {
+        "title": "World War I – Italian Front footprint",
+        "location": "Kingdom of Italy / Austria-Hungary",
+        "start_date": "1915 May 23",
+        "end_date": "1918 November 04",
+        "victims_estimated": 1500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Italian_Front_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.0,
+          45.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_001",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0,
+          40.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_002",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.0,
+          40.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_003",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.0,
+          40.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_004",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.0,
+          43.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_005",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.0,
+          43.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_006",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0,
+          46.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_007",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.0,
+          46.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_balkan_008",
+      "properties": {
+        "title": "World War I – Balkan theatre footprint",
+        "location": "Kingdom of Serbia / Kingdom of Bulgaria / Austria-Hungary / Ottoman Empire",
+        "start_date": "1914 July 28",
+        "end_date": "1918 November 11",
+        "victims_estimated": 1200000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Balkans_campaign_(World_War_I)",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.0,
+          46.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_001",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.0,
+          30.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_002",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.0,
+          30.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_003",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.0,
+          30.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_004",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.0,
+          30.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_005",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.0,
+          30.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_006",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.0,
+          33.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_007",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.0,
+          33.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_008",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.0,
+          33.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_009",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.0,
+          33.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_010",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.0,
+          36.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_011",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.0,
+          36.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_012",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.0,
+          36.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_013",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.0,
+          36.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_014",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.0,
+          36.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_015",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_016",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_017",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_middle_east_018",
+      "properties": {
+        "title": "World War I – Middle Eastern theatre footprint",
+        "location": "Ottoman Empire",
+        "start_date": "1914 October 29",
+        "end_date": "1918 October 30",
+        "victims_estimated": 2500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_caucasus_001",
+      "properties": {
+        "title": "World War I – Caucasus campaign footprint",
+        "location": "Ottoman Empire / Russian Empire",
+        "start_date": "1914 November 01",
+        "end_date": "1918 June 01",
+        "victims_estimated": 500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Caucasus_campaign",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_caucasus_002",
+      "properties": {
+        "title": "World War I – Caucasus campaign footprint",
+        "location": "Ottoman Empire / Russian Empire",
+        "start_date": "1914 November 01",
+        "end_date": "1918 June 01",
+        "victims_estimated": 500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Caucasus_campaign",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_caucasus_003",
+      "properties": {
+        "title": "World War I – Caucasus campaign footprint",
+        "location": "Ottoman Empire / Russian Empire",
+        "start_date": "1914 November 01",
+        "end_date": "1918 June 01",
+        "victims_estimated": 500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Caucasus_campaign",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.0,
+          39.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_caucasus_004",
+      "properties": {
+        "title": "World War I – Caucasus campaign footprint",
+        "location": "Ottoman Empire / Russian Empire",
+        "start_date": "1914 November 01",
+        "end_date": "1918 June 01",
+        "victims_estimated": 500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Caucasus_campaign",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.0,
+          42.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ww1_caucasus_005",
+      "properties": {
+        "title": "World War I – Caucasus campaign footprint",
+        "location": "Ottoman Empire / Russian Empire",
+        "start_date": "1914 November 01",
+        "end_date": "1918 June 01",
+        "victims_estimated": 500000,
+        "wikipedia": "https://en.wikipedia.org/wiki/Caucasus_campaign",
+        "radius_km": 300
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.0,
+          42.0
+        ]
+      }
     }
   ]
 }
+ 
