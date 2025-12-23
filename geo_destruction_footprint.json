@@ -2921,10 +2921,6 @@
         ]
       }
     },
-
-    {
-  "type": "FeatureCollection",
-  "features": [
     {
       "type": "Feature",
       "id": "ww1_western_front_001",
