@@ -4,13 +4,13 @@
     {
       "id": "wwi_1914_1918",
       "label": "World War I",
-      "file": "/events/wwi_1914_1918.geojson",
+      "file": "events/wwi_1914_1918.geojson",
       "format": "geojson"
     },
     {
       "id": "wwii_1939_1945",
       "label": "World War II",
-      "file": "/events/wwii_1939_1945.geojson",
+      "file": "events/wwii_1939_1945.geojson",
       "format": "geojson"
     }
   ]
