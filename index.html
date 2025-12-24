@@ -46,6 +46,8 @@ map.on('load', async () => {
       data: geojson
     });
 
+    console.log('LOADED', sourceId, geojson);
+    
     map.addLayer({
       id: `${sourceId}-points`,
       type: 'circle',
