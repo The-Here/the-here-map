@@ -17,7 +17,7 @@
     },
    
     {
-      "id": "wwi",
+      "id": "wwi_theaters",
       "label": "WWI theaters 1914–1918",
       "file": "events/wwi_theaters.geojson",
       "format": "geojson",
