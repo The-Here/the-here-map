@@ -1,4 +1,4 @@
-t<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -32,31 +32,73 @@ const map = new mapboxgl.Map({
 });
 
 map.on('load', async () => {
-  const manifestRes = await fetch('./manifest.json');
+  // Load manifest
+  const manifestRes = await fetch('manifest.json');
   const manifest = await manifestRes.json();
 
   for (const dataset of manifest.datasets) {
     const sourceId = dataset.id;
 
+    // Load dataset GeoJSON
     const res = await fetch(dataset.file);
     const geojson = await res.json();
 
+    // Add as source
     map.addSource(sourceId, {
       type: 'geojson',
       data: geojson
     });
 
     console.log('LOADED', sourceId, geojson);
-    
-    map.addLayer({
-      id: `${sourceId}-points`,
-      type: 'circle',
-      source: sourceId,
-      paint: {
-        'circle-radius': 5,
-        'circle-color': '#000'
-      }
-    });
+
+    // Decide how to render based on geometryType
+    if (dataset.geometryType === 'point') {
+      // Existing dots
+      map.addLayer({
+        id: `${sourceId}-points`,
+        type: 'circle',
+        source: sourceId,
+        paint: {
+          'circle-radius': 5,
+          'circle-color': '#000000'
+        }
+      });
+    } else if (dataset.geometryType === 'polygon') {
+      // WWI devastated belts / fronts as polygons using "intensity"
+      map.addLayer({
+        id: `${sourceId}-fill`,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, '#fee2e2',
+            3, '#f97373',
+            5, '#7f1d1d'
+          ],
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, 0.15,
+            5, 0.6
+          ]
+        }
+      });
+
+      // Optional outline
+      map.addLayer({
+        id: `${sourceId}-outline`,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': '#111827',
+          'line-width': 0.5
+        }
+      });
+    }
   }
 });
 </script>
