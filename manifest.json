@@ -6,18 +6,21 @@
       "label": "World War I",
       "file": "events/wwi_1914_1918.geojson",
       "format": "geojson"
+      "geometryType": "point"
     },
     {
       "id": "wwi",
-      "label": "First World War",
+      "label": "WWI fronts & devastated belts 1914–1918",
       "file": "events/wwi.geojson",
       "format": "geojson"
+      "geometryType": "polygon"
     },
     {
       "id": "wwii_1939_1945",
       "label": "World War II",
       "file": "events/wwii_1939_1945.geojson",
       "format": "geojson"
+      "geometryType": "point"
     }
   ]
 }
