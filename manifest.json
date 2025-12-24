@@ -15,6 +15,14 @@
       "format": "geojson",
       "geometryType": "polygon"
     },
+   
+    {
+      "id": "wwi",
+      "label": "WWI theaters 1914–1918",
+      "file": "events/ wwi_theaters.geojson",
+      "format": "geojson",
+      "geometryType": "polygon"
+    },
     {
       "id": "wwii_1939_1945",
       "label": "World War II",
