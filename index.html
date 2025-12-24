@@ -32,7 +32,7 @@ const map = new mapboxgl.Map({
 });
 
 map.on('load', async () => {
-  const manifestRes = await fetch('./manifest.json');
+  const manifestRes = await fetch('./manif.json');
   const manifest = await manifestRes.json();
 
   for (const dataset of manifest.datasets) {
