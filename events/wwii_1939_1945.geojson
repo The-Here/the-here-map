@@ -1,1 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "wwii_start",
+      "properties": {
+        "title": "World War II begins",
+        "start_date": "1939-09-01",
+        "end_date": "1939-09-01"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [19.1451, 51.9194]
+      }
+    }
+  ]
+}
 
