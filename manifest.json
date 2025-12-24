@@ -2,21 +2,6 @@
   "version": 1,
   "datasets": [
     {
-      "id": "wwi_1914_1918",
-      "label": "World War I",
-      "file": "events/wwi_1914_1918.geojson",
-      "format": "geojson",
-      "geometryType": "point"
-    },
-    {
-      "id": "wwi",
-      "label": "WWI fronts & devastated belts 1914–1918",
-      "file": "events/wwi.geojson",
-      "format": "geojson",
-      "geometryType": "polygon"
-    },
-   
-    {
       "id": "wwi_theaters",
       "label": "WWI theaters 1914–1918",
       "file": "events/wwi_theaters.geojson",
