@@ -8,6 +8,12 @@
       "format": "geojson"
     },
     {
+      "id": "wwi",
+      "label": "First World War",
+      "file": "events/wwi.geojson",
+      "format": "geojson"
+    },
+    {
       "id": "wwii_1939_1945",
       "label": "World War II",
       "file": "events/wwii_1939_1945.geojson",
