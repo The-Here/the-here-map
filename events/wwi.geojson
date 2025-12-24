@@ -1,0 +1,133 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "conflict": "First World War",
+    "start_date": "1914-07-28",
+    "end_date": "1918-11-11",
+    "note": "Front belts and devastated zones are approximate, drawn to express time, location, and scale of human loss rather than borders or sides."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "western_front_1914_1918",
+        "label": "Western front belt 1914–1918",
+        "start_date": "1914-08-01",
+        "end_date": "1918-11-11",
+        "estimated_killed": 3000000,
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [2.5, 51.0],   [3.3, 50.8], [3.8, 50.4],
+          [3.6, 49.9],   [3.3, 49.4], [3.5, 48.9],
+          [4.2, 48.7],   [5.0, 48.9], [5.8, 49.2],
+          [6.6, 49.0],   [7.4, 48.6], [7.3, 48.0],
+          [6.5, 47.6],   [5.5, 47.5], [4.5, 47.8],
+          [3.6, 48.2],   [2.8, 48.8], [2.3, 49.5],
+          [2.1, 50.1],   [2.2, 50.6], [2.5, 51.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "eastern_front_1914_1917",
+        "label": "Eastern front belt 1914–1917",
+        "start_date": "1914-08-01",
+        "end_date": "1917-12-31",
+        "estimated_killed": 2500000,
+        "intensity": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [19.0, 54.8], [21.0, 54.4], [23.5, 54.0],
+          [25.5, 53.0], [27.0, 51.5], [27.5, 50.0],
+          [26.0, 48.8], [24.0, 48.0], [22.0, 48.0],
+          [20.0, 48.5], [18.5, 49.5], [18.0, 50.5],
+          [18.0, 51.5], [18.5, 52.5], [19.0, 53.5],
+          [19.0, 54.8]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "italian_front_1915_1918",
+        "label": "Mountain front belt 1915–1918",
+        "start_date": "1915-05-23",
+        "end_date": "1918-11-04",
+        "estimated_killed": 1000000,
+        "intensity": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [11.0, 47.0], [11.8, 47.1], [12.5, 46.9],
+          [13.3, 46.6], [13.7, 46.1], [13.3, 45.7],
+          [12.6, 45.6], [12.0, 45.7], [11.5, 46.0],
+          [11.1, 46.5], [11.0, 47.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "somme_1916",
+        "label": "Somme 1916",
+        "start_date": "1916-07-01",
+        "end_date": "1916-11-18",
+        "estimated_killed": 300000,
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [2.45, 50.10], [2.85, 50.10],
+          [2.85, 49.80], [2.45, 49.80],
+          [2.45, 50.10]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "verdun_1916",
+        "label": "Verdun 1916",
+        "start_date": "1916-02-21",
+        "end_date": "1916-12-18",
+        "estimated_killed": 300000,
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [5.20, 49.30], [5.60, 49.30],
+          [5.60, 49.00], [5.20, 49.00],
+          [5.20, 49.30]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "flanders_1917",
+        "label": "Flanders 1917",
+        "start_date": "1917-07-31",
+        "end_date": "1917-11-10",
+        "estimated_killed": 250000,
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [2.75, 51.10], [3.10, 51.10],
+          [3.10, 50.80], [2.75, 50.80],
+          [2.75, 51.10]
+        ]]
+      }
+    }
+  ]
+}
