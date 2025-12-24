@@ -4,8 +4,10 @@
   <meta charset="utf-8" />
   <title>The Here — Minimal Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
   <style>
     body { margin: 0; padding: 0; }
     #map { position: absolute; top: 0; bottom: 50px; width: 100%; }
@@ -28,48 +30,33 @@
 
 <div id="map"></div>
 <div id="time">
-  <input id="timeSlider" type="range" min="1800" max="2000" step="1" value="1900">
+  <input id="timeSlider" type="range" min="1900" max="1999" step="1" value="1900">
 </div>
 
 <script>
-mapboxgl.accessToken = 'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
+mapboxgl.accessToken =
+  'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v11',
-  projection: 'mercator',            // flat map
+  projection: 'mercator',
   center: [0, 20],
   zoom: 1,
-  minZoom: 1,                         // cannot zoom out more than world view
+  minZoom: 1,
   maxZoom: 12
 });
 
-// sample events
-const events = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: { year: 1850 },
-      geometry: { type: 'Point', coordinates: [-74.006, 40.7128] }
-    },
-    {
-      type: 'Feature',
-      properties: { year: 1900 },
-      geometry: { type: 'Point', coordinates: [-74.006, 40.7128] }
-    },
-    {
-      type: 'Feature',
-      properties: { year: 1950 },
-      geometry: { type: 'Point', coordinates: [2.3522, 48.8566] }
-    }
-  ]
-};
+let fullData = null;
 
-map.on('load', () => {
+map.on('load', async () => {
+  // LOAD REAL GEOJSON
+  const res = await fetch('./events/wiki_1900_1999.geojson');
+  fullData = await res.json();
+
   map.addSource('events', {
     type: 'geojson',
-    data: events,
+    data: fullData,
     cluster: true,
     clusterRadius: 40
   });
@@ -81,7 +68,8 @@ map.on('load', () => {
     filter: ['has', 'point_count'],
     paint: {
       'circle-radius': [
-        'step', ['get', 'point_count'],
+        'step',
+        ['get', 'point_count'],
         15, 10, 20, 50, 30
       ],
       'circle-color': '#111'
@@ -108,20 +96,28 @@ map.on('load', () => {
     source: 'events',
     filter: ['!', ['has', 'point_count']],
     paint: {
-      'circle-radius': 6,
+      'circle-radius': 5,
       'circle-color': '#000'
     }
   });
 });
 
-// time filter
+// TIME FILTER
 const slider = document.getElementById('timeSlider');
+
 slider.addEventListener('input', (e) => {
-  const year = parseInt(e.target.value);
-  map.getSource('events').setData({
-    ...events,
-    features: events.features.filter(f => f.properties.year <= year)
-  });
+  if (!fullData) return;
+
+  const year = parseInt(e.target.value, 10);
+
+  const filtered = {
+    type: 'FeatureCollection',
+    features: fullData.features.filter(
+      f => Number(f.properties.year) <= year
+    )
+  };
+
+  map.getSource('events').setData(filtered);
 });
 </script>
 
