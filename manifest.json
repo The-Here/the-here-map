@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "id": "wiki_1900_1999",
+      "label": "Wiki Events 1900–1999",
+      "path": "/events/wiki_1900_1999.geojson",
+      "format": "geojson"
+    }
+  ]
+}
