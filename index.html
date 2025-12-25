@@ -18,89 +18,145 @@
 <div id="map"></div>
 
 <script>
-mapboxgl.accessToken =
-  'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
+  mapboxgl.accessToken =
+    'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/mapbox/light-v11',
-  projection: 'mercator',
-  center: [0, 20],
-  zoom: 1,
-  minZoom: 1,
-  maxZoom: 12
-});
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v11',
+    projection: 'mercator',
+    center: [0, 20],
+    zoom: 1,
+    minZoom: 1,
+    maxZoom: 12
+  });
 
-map.on('load', async () => {
-  // Load manifest
-  const manifestRes = await fetch('manifest.json');
-  const manifest = await manifestRes.json();
+  map.on('load', async () => {
+    // Load manifest
+    const manifestRes = await fetch('manifest.json');
+    const manifest = await manifestRes.json();
 
-  for (const dataset of manifest.datasets) {
-    const sourceId = dataset.id;
+    for (const dataset of manifest.datasets) {
+      const sourceId = dataset.id;
 
-    // Load dataset GeoJSON
-    const res = await fetch(dataset.file);
-    const geojson = await res.json();
+      // Load dataset GeoJSON
+      const res = await fetch(dataset.file);
+      const geojson = await res.json();
 
-    // Add as source
-    map.addSource(sourceId, {
-      type: 'geojson',
-      data: geojson
-    });
-
-    console.log('LOADED', sourceId, geojson);
-
-    // Decide how to render based on geometryType
-    if (dataset.geometryType === 'point') {
-      // Existing dots
-      map.addLayer({
-        id: `${sourceId}-points`,
-        type: 'circle',
-        source: sourceId,
-        paint: {
-          'circle-radius': 5,
-          'circle-color': '#000000'
-        }
-      });
-    } else if (dataset.geometryType === 'polygon') {
-      // WWI devastated belts / fronts as polygons using "intensity"
-      map.addLayer({
-        id: `${sourceId}-fill`,
-        type: 'fill',
-        source: sourceId,
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'intensity'],
-            1, '#fee2e2',
-            3, '#f97373',
-            5, '#7f1d1d'
-          ],
-          'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['get', 'intensity'],
-            1, 0.15,
-            5, 0.6
-          ]
-        }
+      // Add as source
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: geojson
       });
 
-      // Optional outline
-      map.addLayer({
-        id: `${sourceId}-outline`,
-        type: 'line',
-        source: sourceId,
-        paint: {
-          'line-color': '#111827',
-          'line-width': 0.5
-        }
+      console.log('LOADED', sourceId, geojson);
+
+      const isPoint = dataset.geometryType === 'point';
+      const layerId = `${sourceId}-layer`;
+
+      // Add layer: points or polygons
+      if (isPoint) {
+        map.addLayer({
+          id: layerId,
+          type: 'circle',
+          source: sourceId,
+          paint: {
+            'circle-radius': 5,
+            'circle-color': '#000000'
+          }
+        });
+      } else {
+        map.addLayer({
+          id: layerId,
+          type: 'fill',
+          source: sourceId,
+          paint: {
+            'fill-color': [
+              'interpolate',
+              ['linear'],
+              ['get', 'intensity'],
+              1, '#fee2e2',
+              3, '#f97373',
+              5, '#7f1d1d'
+            ],
+            'fill-opacity': [
+              'interpolate',
+              ['linear'],
+              ['get', 'intensity'],
+              1, 0.15,
+              5, 0.6
+            ]
+          }
+        });
+
+        map.addLayer({
+          id: `${sourceId}-outline`,
+          type: 'line',
+          source: sourceId,
+          paint: {
+            'line-color': '#111827',
+            'line-width': 0.5
+          }
+        });
+      }
+
+      // --- Interactions: click + hover for this layer ---
+
+      map.on('click', layerId, (e) => {
+        const f = e.features && e.features[0];
+        if (!f) return;
+
+        const p = f.properties || {};
+
+        const title =
+          p.label ||
+          p.theater_id ||
+          p.id ||
+          dataset.label;
+
+        const dates =
+          p.start_date && p.end_date
+            ? `${p.start_date} – ${p.end_date}`
+            : '';
+
+        const intensity = p.intensity
+          ? `Intensity: ${p.intensity}`
+          : '';
+
+        // Try several possible country-year fields
+        const countries =
+          p.countries_1914 ||
+          p.countries_1915 ||
+          p.countries_1916 ||
+          p.countries_1917 ||
+          p.countries;
+
+        const countriesText = countries
+          ? `Areas: ${countries}`
+          : '';
+
+        const html = `
+          <strong>${title}</strong><br>
+          ${dates}<br>
+          ${intensity}<br>
+          ${countriesText}
+        `;
+
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(html)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', layerId, () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
       });
     }
-  }
-});
+  });
 </script>
 
 </body>
