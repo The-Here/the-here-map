@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>The Here — Map</title>
+  <title>The Here — Flat Map & WWI Theaters</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
@@ -14,273 +14,116 @@
   </style>
 </head>
 <body>
-
 <div id="map"></div>
 
 <script>
-  mapboxgl.accessToken =
-    'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
+mapboxgl.accessToken =
+  'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    projection: 'mercator',
-    center: [0, 20],
-    zoom: 1,
-    minZoom: 1,
-    maxZoom: 12
-  });
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/light-v11',
+  center: [10, 30],
+  zoom: 1,
+  projection: 'equirectangular',   // <<--- flat world map
+  minZoom: 1,
+  maxZoom: 12
+});
 
-  // Above this zoom, polygons stop reacting to clicks
-  const POLYGON_MAX_CLICK_ZOOM = 3;
+const POLYGON_MAX_CLICK_ZOOM = 4;
 
-  map.on('load', async () => {
-    const manifestRes = await fetch('manifest.json');
-    const manifest = await manifestRes.json();
+map.on('load', async () => {
+  const manifestRes = await fetch('manifest.json');
+  const manifest = await manifestRes.json();
 
-    // Unclustered point layers, so polygons can "yield"
-    const pointLayers = [];
+  const pointLayers = [];
 
-    for (const dataset of manifest.datasets) {
-      const sourceId = dataset.id;
-      const isPoint = dataset.geometryType === 'point';
-      const isPolygon = dataset.geometryType === 'polygon';
+  for (const dataset of manifest.datasets) {
+    const { id, file, geometryType, label } = dataset;
+    const dataRes = await fetch(file);
+    const geojson = await dataRes.json();
 
-      const res = await fetch(dataset.file);
-      const geojson = await res.json();
+    console.log('LOADED', id, geojson);
 
-      // ----- SOURCES -----
-      if (isPoint) {
-        // clustered source for test points
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geojson,
-          cluster: true,
-          clusterMaxZoom: 9,
-          clusterRadius: 50
+    // ---------------- POINT DATASETS (clusters) ----------------
+    if (geometryType === 'point') {
+      map.addSource(id, {
+        type: 'geojson',
+        data: geojson,
+        cluster: true,
+        clusterMaxZoom: 9,
+        clusterRadius: 50
+      });
+
+      // Cluster circles
+      map.addLayer({
+        id: `${id}-clusters`,
+        type: 'circle',
+        source: id,
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#51bbd6', 10,
+            '#f1f075', 30,
+            '#f28cb1'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            15, 10,
+            20, 30,
+            25
+          ]
+        }
+      });
+
+      // Cluster numbers
+      map.addLayer({
+        id: `${id}-cluster-count`,
+        type: 'symbol',
+        source: id,
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-size': 12
+        },
+        paint: { 'text-color': '#000000' }
+      });
+
+      // Individual points
+      map.addLayer({
+        id: `${id}-unclustered-point`,
+        type: 'circle',
+        source: id,
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-radius': 8,
+          'circle-color': '#000000',
+          'circle-opacity': 0.9,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 1
+        }
+      });
+
+      pointLayers.push(`${id}-unclustered-point`);
+
+      // Cluster zoom
+      map.on('click', `${id}-clusters`, (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: [`${id}-clusters`]
         });
-      } else {
-        // non-clustered source for polygons
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geojson
-        });
-      }
-
-      console.log('LOADED', sourceId, geojson);
-
-      // ----- LAYERS -----
-      if (isPoint) {
-        // 1) cluster circles
-        map.addLayer({
-          id: `${sourceId}-clusters`,
-          type: 'circle',
-          source: sourceId,
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': [
-              'step',
-              ['get', 'point_count'],
-              '#51bbd6', 10,
-              '#f1f075', 30,
-              '#f28cb1'
-            ],
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              15, 10,
-              20, 30,
-              25
-            ]
-          }
-        });
-
-        // 2) cluster count labels
-        map.addLayer({
-          id: `${sourceId}-cluster-count`,
-          type: 'symbol',
-          source: sourceId,
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': ['get', 'point_count_abbreviated'],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12
-          },
-          paint: {
-            'text-color': '#000000'
-          }
-        });
-
-        // 3) unclustered points
-        map.addLayer({
-          id: `${sourceId}-unclustered-point`,
-          type: 'circle',
-          source: sourceId,
-          filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-radius': 8,
-            'circle-color': '#000000',
-            'circle-opacity': 0.9,
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 1
-          }
-        });
-
-        pointLayers.push(`${sourceId}-unclustered-point`);
-
-        // ----- POINT INTERACTIONS -----
-
-        // click cluster to expand
-        map.on('click', `${sourceId}-clusters`, (e) => {
-          const features = map.queryRenderedFeatures(e.point, {
-            layers: [`${sourceId}-clusters`]
+        if (!features.length) return;
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource(id).getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) return;
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom
           });
-          if (!features.length) return;
-
-          const clusterId = features[0].properties.cluster_id;
-          map.getSource(sourceId).getClusterExpansionZoom(
-            clusterId,
-            (err, zoom) => {
-              if (err) return;
-              map.easeTo({
-                center: features[0].geometry.coordinates,
-                zoom: zoom
-              });
-            }
-          );
         });
+      });
 
-        // popup for individual point
-        map.on('click', `${sourceId}-unclustered-point`, (e) => {
-          const f = e.features && e.features[0];
-          if (!f) return;
-
-          const p = f.properties || {};
-          const title = p.label || p.id || dataset.label || 'Event';
-          const dates =
-            p.start_date && p.end_date
-              ? `${p.start_date} – ${p.end_date}`
-              : (p.date || '');
-
-          const html = `
-            <strong>${title}</strong><br>
-            ${dates}
-          `;
-
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(html)
-            .addTo(map);
-        });
-
-        // cursors
-        map.on('mouseenter', `${sourceId}-clusters`, () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', `${sourceId}-clusters`, () => {
-          map.getCanvas().style.cursor = '';
-        });
-        map.on('mouseenter', `${sourceId}-unclustered-point`, () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', `${sourceId}-unclustered-point`, () => {
-          map.getCanvas().style.cursor = '';
-        });
-
-      } else if (isPolygon) {
-        const fillId = `${sourceId}-fill`;
-
-        // polygon fill
-        map.addLayer({
-          id: fillId,
-          type: 'fill',
-          source: sourceId,
-          paint: {
-            'fill-color': [
-              'interpolate',
-              ['linear'],
-              ['get', 'intensity'],
-              1, '#fee2e2',
-              3, '#f97373',
-              5, '#7f1d1d'
-            ],
-            'fill-opacity': [
-              'interpolate',
-              ['linear'],
-              ['get', 'intensity'],
-              1, 0.15,
-              5, 0.6
-            ]
-          }
-        });
-
-        // polygon outline
-        map.addLayer({
-          id: `${sourceId}-outline`,
-          type: 'line',
-          source: sourceId,
-          paint: {
-            'line-color': '#111827',
-            'line-width': 0.5
-          }
-        });
-
-        // polygon popup: only at low zoom, and only if no point is under click
-        map.on('click', fillId, (e) => {
-          if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-
-          if (pointLayers.length > 0) {
-            const nearbyPoints = map.queryRenderedFeatures(e.point, {
-              layers: pointLayers
-            });
-            if (nearbyPoints.length > 0) return;
-          }
-
-          const f = e.features && e.features[0];
-          if (!f) return;
-
-          const p = f.properties || {};
-          const title = p.label || p.theater_id || dataset.label || 'Area';
-          const dates =
-            p.start_date && p.end_date
-              ? `${p.start_date} – ${p.end_date}`
-              : '';
-          const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
-
-          const countries =
-            p.countries_1914 ||
-            p.countries_1915 ||
-            p.countries_1916 ||
-            p.countries_1917 ||
-            p.countries;
-
-          const countriesText = countries ? `Areas: ${countries}` : '';
-
-          const html = `
-            <strong>${title}</strong><br>
-            ${dates}<br>
-            ${intensity}<br>
-            ${countriesText}
-          `;
-
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(html)
-            .addTo(map);
-        });
-
-        map.on('mouseenter', fillId, () => {
-          if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
-            map.getCanvas().style.cursor = 'pointer';
-          }
-        });
-        map.on('mouseleave', fillId, () => {
-          map.getCanvas().style.cursor = '';
-        });
-      }
-    }
-  });
-</script>
-
-</body>
-</html>
+      // Point popups
