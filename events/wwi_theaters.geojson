@@ -204,7 +204,18 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 3,
-        "estimated_killed": 400000
+        "estimated_killed": 400000,
+        "countries_1914": [
+          "United Kingdom",
+          "German Empire",
+          "French Third Republic"
+        ],
+        "countries_1917": [
+          "United Kingdom",
+          "German Empire",
+          "French Third Republic",
+          "United States"
+        ]
       },
       "geometry": {
         "type": "Polygon",
@@ -225,7 +236,24 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 2,
-        "estimated_killed": 300000
+        "estimated_killed": 300000,
+        "countries_1914": [
+          "United Kingdom",
+          "French Third Republic",
+          "German Empire",
+          "Austro-Hungarian Empire",
+          "Ottoman Empire",
+          "Empire of Japan"
+        ],
+        "countries_1917": [
+          "United Kingdom",
+          "French Third Republic",
+          "German Empire",
+          "Austro-Hungarian Empire",
+          "Ottoman Empire",
+          "Empire of Japan",
+          "United States"
+        ]
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -320,4 +348,3 @@
     }
   ]
 }
-
