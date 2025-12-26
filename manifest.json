@@ -9,7 +9,7 @@
       "geometryType": "polygon"
     },
     {
-      "id": "wwii_1939_1945",
+      "id": "test",
       "label": "World War II",
       "file": "events/wwii_1939_1945.geojson",
       "format": "geojson",
