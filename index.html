@@ -1,190 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <title>The Here — Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
-
-  <style>
-   body { margin: 0; padding: 0; }
-    #map { position: absolute; inset: 0; }
-  </style>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
 </head>
-
 <body>
-<div id="map"></div>
-
-<script>
-mapboxgl.accessToken =
-  'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
-
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/mapbox/light-v11',
-  projection: 'mercator',
-  center: [0, 20],
-  zoom: 1,
-    minZoom: 1,
-    maxZoom: 12
-});
-
-const POLYGON_MAX_CLICK_ZOOM = 4;
-
-map.on('load', async () => {
-  const manifestRes = await fetch('manifest.json');
-  const manifest = await manifestRes.json();
-
-  const pointLayers = [];
-
-  for (const dataset of manifest.datasets) {
-    const { id, file, geometryType, label } = dataset;
-    const dataRes = await fetch(file);
-    const geojson = await dataRes.json();
-
-    console.log('LOADED', id, geojson);
-
-    // ---------------- POINT DATASETS (clusters) ----------------
-    if (geometryType === 'point') {
-      map.addSource(id, {
-        type: 'geojson',
-        data: geojson,
-        cluster: true,
-        clusterMaxZoom: 9,
-        clusterRadius: 50
-      });
-
-      // Cluster circles
-      map.addLayer({
-        id: `${id}-clusters`,
-        type: 'circle',
-        source: id,
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': [
-            'step',
-            ['get', 'point_count'],
-            '#51bbd6', 10,
-            '#f1f075', 30,
-            '#f28cb1'
-          ],
-          'circle-radius': [
-            'step',
-            ['get', 'point_count'],
-            15, 10,
-            20, 30,
-            25
-          ]
-        }
-      });
-
-      // Cluster numbers
-      map.addLayer({
-        id: `${id}-cluster-count`,
-        type: 'symbol',
-        source: id,
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 12
-        },
-        paint: { 'text-color': '#000000' }
-      });
-
-      // Individual points
-      map.addLayer({
-        id: `${id}-unclustered-point`,
-        type: 'circle',
-        source: id,
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#000000',
-          'circle-opacity': 0.9,
-          'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 1
-        }
-      });
-
-      pointLayers.push(`${id}-unclustered-point`);
-
-      // Cluster click → zoom
-      map.on('click', `${id}-clusters`, (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: [`${id}-clusters`] });
-        if (!features.length) return;
-        const clusterId = features[0].properties.cluster_id;
-        map.getSource(id).getClusterExpansionZoom(clusterId, (err, zoom) => {
-          if (err) return;
-          map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+    <div id='map'></div>
+    <script>
+        mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN_HERE'; // Replace with your token
+        
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11', // Light flat style
+            center: [-98, 39], // Center on US or your data bounds
+            zoom: 4,
+            pitch: 0 // Flat, no globe tilt
         });
-      });
 
-      // Point popups
-      map.on('click', `${id}-unclustered-point`, (e) => {
-        const f = e.features && e.features[0];
-        if (!f) return;
-        const p = f.properties || {};
-        const html = `<strong>${p.label || label}</strong><br>${p.date || ''}`;
-        new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
-      });
+        map.on('load', () => {
+            // Load your GeoJSON with clustering
+            map.addSource('events', {
+                type: 'geojson',
+                data: './test.geojson', // Your clustering data
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 75 // Matches iOS example
+            });
 
-      // Cursor
-      for (const l of [`${id}-clusters`, `${id}-unclustered-point`]) {
-        map.on('mouseenter', l, () => map.getCanvas().style.cursor = 'pointer');
-        map.on('mouseleave', l, () => map.getCanvas().style.cursor = '');
-      }
-    }
+            // 1. Clustered circles (main clusters)
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'events',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': [
+                        'step',
+                        ['get', 'point_count'],
+                        '#51bbd6', 100,  '#f1f075', 750, '#f28cb1'
+                    ],
+                    'circle-radius': [
+                        'step',
+                        ['get', 'point_count'],
+                        20, 100, 30, 750, 40
+                    ]
+                }
+            });
 
-    // ---------------- POLYGON DATASETS (WWI theaters) ----------------
-    if (geometryType === 'polygon') {
-      map.addSource(id, { type: 'geojson', data: geojson });
+            // 2. Cluster count labels
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'events',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': ['get', 'point_count_abbreviated'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: {
+                    'text-color': '#ffffff'
+                }
+            });
 
-      map.addLayer({
-        id: `${id}-fill`,
-        type: 'fill',
-        source: id,
-        paint: {
-          'fill-color': [
-            'interpolate', ['linear'], ['get', 'intensity'],
-            1, '#fee2e2', 3, '#f97373', 5, '#7f1d1d'
-          ],
-          'fill-opacity': [
-            'interpolate', ['linear'], ['get', 'intensity'],
-            1, 0.15, 5, 0.6
-          ]
-        }
-      });
+            // 3. Unclustered individual points
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'events',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#11b4da',
+                    'circle-radius': 4,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+        });
 
-      map.addLayer({
-        id: `${id}-outline`,
-        type: 'line',
-        source: id,
-        paint: { 'line-color': '#111827', 'line-width': 0.5 }
-      });
+        // Click cluster to zoom/expand
+        map.on('click', 'clusters', (e) => {
+            const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+            const clusterId = features[0].properties.cluster_id;
+            map.getSource('events').getClusterExpansionZoom(
+                clusterId,
+                (err, zoom) => {
+                    if (err) return;
+                    map.easeTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom
+                    });
+                }
+            );
+        });
 
-      // Polygon popups
-      map.on('click', `${id}-fill`, (e) => {
-        if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-        const pts = map.queryRenderedFeatures(e.point, { layers: pointLayers });
-        if (pts.length) return;
-        const f = e.features && e.features[0];
-        if (!f) return;
-        const p = f.properties || {};
-        const title = p.label || p.theater_id || label;
-        const countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries;
-        const html = `<strong>${title}</strong><br>${p.start_date || ''} – ${p.end_date || ''}<br>${countries ? `Countries: ${countries}` : ''}`;
-        new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
-      });
+        // Hover cursor
+        map.on('mouseenter', 'clusters', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'clusters', () => {
+            map.getCanvas().style.cursor = '';
+        });
 
-      map.on('mouseenter', `${id}-fill`, () => {
-        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', `${id}-fill`, () => map.getCanvas().style.cursor = '');
-    }
-  }
-});
-</script>
+        // Optional: Click unclustered point popup
+        map.on('click', 'unclustered-point', (e) => {
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(`Event at ${coordinates[1].toFixed(4)}, ${coordinates[0].toFixed(4)}`)
+                .addTo(map);
+        });
+    </script>
 </body>
 </html>
