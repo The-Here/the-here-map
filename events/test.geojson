@@ -1,0 +1,70 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "test_east_1",
+        "label": "Test point 1",
+        "date": "1915-01-01",
+        "intensity": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.0, 54.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "test_east_2",
+        "label": "Test point 2",
+        "date": "1915-06-01",
+        "intensity": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.0, 53.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "test_east_3",
+        "label": "Test point 3",
+        "date": "1916-03-01",
+        "intensity": 3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [25.0, 52.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "test_east_4",
+        "label": "Test point 4",
+        "date": "1916-09-01",
+        "intensity": 4
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0, 51.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "test_east_5",
+        "label": "Test point 5",
+        "date": "1917-05-01",
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [24.0, 50.5]
+      }
+    }
+  ]
+}
