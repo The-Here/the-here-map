@@ -38,7 +38,7 @@
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
 
-    // Build a list of point layer ids so polygons can check for them
+    // Keep track of all point layers so polygons can “yield” to them
     const pointLayerIds = [];
 
     for (const dataset of manifest.datasets) {
@@ -58,7 +58,7 @@
       const baseLayerId = `${sourceId}-layer`;
 
       if (isPoint) {
-        // POINTS: symbol size grows with zoom
+        // POINTS: radius grows with zoom so they stay clickable
         map.addLayer({
           id: baseLayerId,
           type: 'circle',
@@ -80,7 +80,7 @@
 
         pointLayerIds.push(baseLayerId);
 
-        // Point interactions
+        // Point popup
         map.on('click', baseLayerId, (e) => {
           const f = e.features && e.features[0];
           if (!f) return;
@@ -113,8 +113,7 @@
         });
 
       } else {
-        // POLYGONS: context; clickable only at low zoom and only
-        // when no point lies under the click
+        // POLYGONS: context; clickable only at low zoom and when no point is hit
         map.addLayer({
           id: baseLayerId,
           type: 'fill',
@@ -148,11 +147,12 @@
           }
         });
 
+        // Polygon popup with “yield to points” logic
         map.on('click', baseLayerId, (e) => {
-          // 1) Ignore at high zoom
+          // 1) Ignore when zoomed in
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
-          // 2) If any point is under this click, let the point handle it
+          // 2) If a point is under the click, let that handler run instead
           if (pointLayerIds.length > 0) {
             const nearbyPoints = map.queryRenderedFeatures(e.point, {
               layers: pointLayerIds
