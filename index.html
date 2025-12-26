@@ -31,12 +31,15 @@
     maxZoom: 12
   });
 
-  // Zoom threshold: above this, polygons are not clickable
+  // Above this zoom, polygons stop reacting to clicks
   const POLYGON_MAX_CLICK_ZOOM = 3;
 
   map.on('load', async () => {
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
+
+    // Build a list of point layer ids so polygons can check for them
+    const pointLayerIds = [];
 
     for (const dataset of manifest.datasets) {
       const sourceId = dataset.id;
@@ -55,16 +58,27 @@
       const baseLayerId = `${sourceId}-layer`;
 
       if (isPoint) {
-        // POINTS: always clickable
+        // POINTS: symbol size grows with zoom
         map.addLayer({
           id: baseLayerId,
           type: 'circle',
           source: sourceId,
           paint: {
-            'circle-radius': 5,
-            'circle-color': '#000000'
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              1, 2,
+              3, 4,
+              6, 7,
+              8, 10
+            ],
+            'circle-color': '#000000',
+            'circle-opacity': 0.9
           }
         });
+
+        pointLayerIds.push(baseLayerId);
 
         // Point interactions
         map.on('click', baseLayerId, (e) => {
@@ -99,7 +113,8 @@
         });
 
       } else {
-        // POLYGONS: context; clickable only at low zoom
+        // POLYGONS: context; clickable only at low zoom and only
+        // when no point lies under the click
         map.addLayer({
           id: baseLayerId,
           type: 'fill',
@@ -123,29 +138,29 @@
           }
         });
 
-                map.addLayer({
-  id: baseLayerId,
-  type: 'circle',
-  source: sourceId,
-  paint: {
-    // Radius grows with zoom: small at z=1, bigger at z=8+
-    'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      1, 2,
-      3, 4,
-      6, 7,
-      8, 10
-    ],
-    'circle-color': '#000000',
-    'circle-opacity': 0.9
-  }
-});
-        // Polygon interactions: only when zoomed OUT
+        map.addLayer({
+          id: `${sourceId}-outline`,
+          type: 'line',
+          source: sourceId,
+          paint: {
+            'line-color': '#111827',
+            'line-width': 0.5
+          }
+        });
+
         map.on('click', baseLayerId, (e) => {
+          // 1) Ignore at high zoom
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
+          // 2) If any point is under this click, let the point handle it
+          if (pointLayerIds.length > 0) {
+            const nearbyPoints = map.queryRenderedFeatures(e.point, {
+              layers: pointLayerIds
+            });
+            if (nearbyPoints.length > 0) return;
+          }
+
+          // 3) Show polygon popup
           const f = e.features && e.features[0];
           if (!f) return;
 
