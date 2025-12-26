@@ -38,7 +38,7 @@
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
 
-    // Track which layers are point layers (for yield logic)
+    // Unclustered point layers, so polygons can "yield"
     const pointLayers = [];
 
     for (const dataset of manifest.datasets) {
@@ -49,19 +49,18 @@
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
-      // --- SOURCES ---
-
+      // ----- SOURCES -----
       if (isPoint) {
-        // WWII (or any point dataset) as a CLUSTERED source
+        // clustered source for test points
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson,
           cluster: true,
-          clusterMaxZoom: 9,   // max zoom to cluster points
-          clusterRadius: 50    // cluster radius in pixels
+          clusterMaxZoom: 9,
+          clusterRadius: 50
         });
       } else {
-        // Polygons: normal, non‑cluster source
+        // non-clustered source for polygons
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson
@@ -70,17 +69,15 @@
 
       console.log('LOADED', sourceId, geojson);
 
-      // --- LAYERS ---
-
+      // ----- LAYERS -----
       if (isPoint) {
-        // 1) CLUSTER CIRCLES
+        // 1) cluster circles
         map.addLayer({
           id: `${sourceId}-clusters`,
           type: 'circle',
           source: sourceId,
           filter: ['has', 'point_count'],
           paint: {
-            // Standard Mapbox cluster colors & sizes
             'circle-color': [
               'step',
               ['get', 'point_count'],
@@ -98,7 +95,7 @@
           }
         });
 
-        // 2) CLUSTER COUNT LABEL
+        // 2) cluster count labels
         map.addLayer({
           id: `${sourceId}-cluster-count`,
           type: 'symbol',
@@ -114,7 +111,7 @@
           }
         });
 
-        // 3) UNCLUSTERED INDIVIDUAL POINTS
+        // 3) unclustered points
         map.addLayer({
           id: `${sourceId}-unclustered-point`,
           type: 'circle',
@@ -129,12 +126,11 @@
           }
         });
 
-        // Register unclustered‑point layer for polygon yield logic
         pointLayers.push(`${sourceId}-unclustered-point`);
 
-        // --- POINT INTERACTIONS ---
+        // ----- POINT INTERACTIONS -----
 
-        // Click cluster to zoom in and expand
+        // click cluster to expand
         map.on('click', `${sourceId}-clusters`, (e) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [`${sourceId}-clusters`]
@@ -154,7 +150,7 @@
           );
         });
 
-        // Popup for individual (unclustered) point
+        // popup for individual point
         map.on('click', `${sourceId}-unclustered-point`, (e) => {
           const f = e.features && e.features[0];
           if (!f) return;
@@ -165,12 +161,10 @@
             p.start_date && p.end_date
               ? `${p.start_date} – ${p.end_date}`
               : (p.date || '');
-          const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
 
           const html = `
             <strong>${title}</strong><br>
-            ${dates}<br>
-            ${intensity}
+            ${dates}
           `;
 
           new mapboxgl.Popup()
@@ -179,7 +173,7 @@
             .addTo(map);
         });
 
-        // Cursor hints
+        // cursors
         map.on('mouseenter', `${sourceId}-clusters`, () => {
           map.getCanvas().style.cursor = 'pointer';
         });
@@ -194,11 +188,11 @@
         });
 
       } else if (isPolygon) {
-        const baseLayerId = `${sourceId}-fill`;
+        const fillId = `${sourceId}-fill`;
 
-        // POLYGON FILL
+        // polygon fill
         map.addLayer({
-          id: baseLayerId,
+          id: fillId,
           type: 'fill',
           source: sourceId,
           paint: {
@@ -220,7 +214,7 @@
           }
         });
 
-        // POLYGON OUTLINE
+        // polygon outline
         map.addLayer({
           id: `${sourceId}-outline`,
           type: 'line',
@@ -231,8 +225,8 @@
           }
         });
 
-        // Polygon popup that yields to points and to high zoom
-        map.on('click', baseLayerId, (e) => {
+        // polygon popup: only at low zoom, and only if no point is under click
+        map.on('click', fillId, (e) => {
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
           if (pointLayers.length > 0) {
@@ -260,9 +254,7 @@
             p.countries_1917 ||
             p.countries;
 
-          const countriesText = countries
-            ? `Areas: ${countries}`
-            : '';
+          const countriesText = countries ? `Areas: ${countries}` : '';
 
           const html = `
             <strong>${title}</strong><br>
@@ -277,12 +269,12 @@
             .addTo(map);
         });
 
-        map.on('mouseenter', baseLayerId, () => {
+        map.on('mouseenter', fillId, () => {
           if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
             map.getCanvas().style.cursor = 'pointer';
           }
         });
-        map.on('mouseleave', baseLayerId, () => {
+        map.on('mouseleave', fillId, () => {
           map.getCanvas().style.cursor = '';
         });
       }
