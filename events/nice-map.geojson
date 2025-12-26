@@ -1,126 +1,40 @@
 {
   "type": "FeatureCollection",
   "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "a1",
-        "label": "Store A",
-        "intensity": 3
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-77.032, 38.913]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "a2",
-        "label": "Store B",
-        "intensity": 5
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-122.414, 37.776]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "b1",
-        "label": "Store C",
-        "intensity": 2
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-87.629, 41.878]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "b2",
-        "label": "Store D",
-        "intensity": 4
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-73.935, 40.730]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c1",
-        "label": "Store E",
-        "intensity": 1
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-95.369, 29.760]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c2",
-        "label": "Store F",
-        "intensity": 2
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-118.243, 34.052]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c3",
-        "label": "Store G",
-        "intensity": 3
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-104.990, 39.739]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c4",
-        "label": "Store H",
-        "intensity": 4
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-80.191, 25.761]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "d1",
-        "label": "Store I",
-        "intensity": 1
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-112.074, 33.448]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "d2",
-        "label": "Store J",
-        "intensity": 5
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-71.058, 42.360]
-      }
-    }
+    { "type": "Feature", "properties": { "id": 1 }, "geometry": { "type": "Point", "coordinates": [-122.42, 37.78] } },
+    { "type": "Feature", "properties": { "id": 2 }, "geometry": { "type": "Point", "coordinates": [-122.43, 37.77] } },
+    { "type": "Feature", "properties": { "id": 3 }, "geometry": { "type": "Point", "coordinates": [-122.41, 37.79] } },
+    { "type": "Feature", "properties": { "id": 4 }, "geometry": { "type": "Point", "coordinates": [-122.40, 37.80] } },
+    { "type": "Feature", "properties": { "id": 5 }, "geometry": { "type": "Point", "coordinates": [-122.39, 37.81] } },
+
+    { "type": "Feature", "properties": { "id": 6 }, "geometry": { "type": "Point", "coordinates": [-74.01, 40.71] } },
+    { "type": "Feature", "properties": { "id": 7 }, "geometry": { "type": "Point", "coordinates": [-74.00, 40.72] } },
+    { "type": "Feature", "properties": { "id": 8 }, "geometry": { "type": "Point", "coordinates": [-73.99, 40.73] } },
+    { "type": "Feature", "properties": { "id": 9 }, "geometry": { "type": "Point", "coordinates": [-73.98, 40.74] } },
+    { "type": "Feature", "properties": { "id": 10 }, "geometry": { "type": "Point", "coordinates": [-73.97, 40.75] } },
+
+    { "type": "Feature", "properties": { "id": 11 }, "geometry": { "type": "Point", "coordinates": [-87.63, 41.88] } },
+    { "type": "Feature", "properties": { "id": 12 }, "geometry": { "type": "Point", "coordinates": [-87.64, 41.89] } },
+    { "type": "Feature", "properties": { "id": 13 }, "geometry": { "type": "Point", "coordinates": [-87.62, 41.87] } },
+    { "type": "Feature", "properties": { "id": 14 }, "geometry": { "type": "Point", "coordinates": [-87.61, 41.86] } },
+    { "type": "Feature", "properties": { "id": 15 }, "geometry": { "type": "Point", "coordinates": [-87.60, 41.85] } },
+
+    { "type": "Feature", "properties": { "id": 16 }, "geometry": { "type": "Point", "coordinates": [-95.37, 29.76] } },
+    { "type": "Feature", "properties": { "id": 17 }, "geometry": { "type": "Point", "coordinates": [-95.36, 29.77] } },
+    { "type": "Feature", "properties": { "id": 18 }, "geometry": { "type": "Point", "coordinates": [-95.35, 29.78] } },
+    { "type": "Feature", "properties": { "id": 19 }, "geometry": { "type": "Point", "coordinates": [-95.34, 29.79] } },
+    { "type": "Feature", "properties": { "id": 20 }, "geometry": { "type": "Point", "coordinates": [-95.33, 29.80] } },
+
+    { "type": "Feature", "properties": { "id": 21 }, "geometry": { "type": "Point", "coordinates": [-118.25, 34.05] } },
+    { "type": "Feature", "properties": { "id": 22 }, "geometry": { "type": "Point", "coordinates": [-118.26, 34.06] } },
+    { "type": "Feature", "properties": { "id": 23 }, "geometry": { "type": "Point", "coordinates": [-118.24, 34.07] } },
+    { "type": "Feature", "properties": { "id": 24 }, "geometry": { "type": "Point", "coordinates": [-118.23, 34.08] } },
+    { "type": "Feature", "properties": { "id": 25 }, "geometry": { "type": "Point", "coordinates": [-118.22, 34.09] } },
+
+    { "type": "Feature", "properties": { "id": 26 }, "geometry": { "type": "Point", "coordinates": [-80.19, 25.76] } },
+    { "type": "Feature", "properties": { "id": 27 }, "geometry": { "type": "Point", "coordinates": [-80.18, 25.77] } },
+    { "type": "Feature", "properties": { "id": 28 }, "geometry": { "type": "Point", "coordinates": [-80.17, 25.78] } },
+    { "type": "Feature", "properties": { "id": 29 }, "geometry": { "type": "Point", "coordinates": [-80.16, 25.79] } },
+    { "type": "Feature", "properties": { "id": 30 }, "geometry": { "type": "Point", "coordinates": [-80.15, 25.80] } }
   ]
 }
-
