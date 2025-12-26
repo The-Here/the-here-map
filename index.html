@@ -16,10 +16,7 @@
       height: 100%;
       overflow: hidden;
     }
-    #map {
-      position: absolute;
-      inset: 0;
-    }
+    #map { position: absolute; inset: 0; }
   </style>
 </head>
 <body>
@@ -27,8 +24,14 @@
 <div id="map"></div>
 
 <script>
-  mapboxgl.accessToken =
+  mapboxgl.accessToken = 
     'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
+
+  // Define bounds: nearly world-wide, but not full wrap
+  const bounds = [
+    [-179.9, -85], // southwest corner
+    [179.9, 85]    // northeast corner
+  ];
 
   const map = new mapboxgl.Map({
     container: 'map',
@@ -38,7 +41,8 @@
     zoom: 1,
     minZoom: 1,
     maxZoom: 12,
-    renderWorldCopies: false // disable horizontal scroll wrap
+    renderWorldCopies: false,
+    maxBounds: bounds // <-- Constrain panning to prevent horizontal scroll
   });
 
   const POLYGON_MAX_CLICK_ZOOM = 3;
@@ -77,15 +81,13 @@
           filter: ['has', 'point_count'],
           paint: {
             'circle-color': [
-              'step',
-              ['get', 'point_count'],
+              'step', ['get', 'point_count'],
               '#51bbd6', 10,
               '#f1f075', 30,
               '#f28cb1'
             ],
             'circle-radius': [
-              'step',
-              ['get', 'point_count'],
+              'step', ['get', 'point_count'],
               15, 10,
               20, 30,
               25
@@ -103,7 +105,7 @@
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 12
           },
-          paint: { 'text-color': '#000000' }
+          paint: {'text-color': '#000000'}
         });
 
         map.addLayer({
@@ -126,7 +128,6 @@
         map.on('click', `${sourceId}-clusters`, (e) => {
           const features = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] });
           if (!features.length) return;
-
           const clusterId = features[0].properties.cluster_id;
           map.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, zoom) => {
             if (err) return;
@@ -137,13 +138,11 @@
         map.on('click', `${sourceId}-unclustered-point`, (e) => {
           const f = e.features && e.features[0];
           if (!f) return;
-
           const p = f.properties || {};
           const title = p.label || p.id || dataset.label || 'Event';
           const dates = p.start_date && p.end_date
             ? `${p.start_date} – ${p.end_date}`
             : (p.date || '');
-
           new mapboxgl.Popup()
             .setLngLat(e.lngLat)
             .setHTML(`<strong>${title}</strong><br>${dates}`)
@@ -186,24 +185,14 @@
 
         map.on('click', fillId, (e) => {
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-
           const f = e.features && e.features[0];
           if (!f) return;
-
           const p = f.properties || {};
           const title = p.label || p.theater_id || dataset.label || 'Area';
-          const dates = p.start_date && p.end_date
-            ? `${p.start_date} – ${p.end_date}`
-            : '';
+          const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
           const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
           const countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries;
-          const html = `
-            <strong>${title}</strong><br>
-            ${dates}<br>
-            ${intensity}<br>
-            ${countries ? `Areas: ${countries}` : ''}
-          `;
-
+          const html = `<strong>${title}</strong><br>${dates}<br>${intensity}<br>${countries ? `Areas: ${countries}` : ''}`;
           new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
         });
 
