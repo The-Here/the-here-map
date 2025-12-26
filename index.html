@@ -9,7 +9,8 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 
   <style>
-    body { margin: 0; padding: 0; background: #ffffff; }
+    /* FIX: Background color matches the 'light-v11' ocean color for a seamless look */
+    body { margin: 0; padding: 0; background-color: #d1dbdd; }
     #map { position: absolute; inset: 0; }
   </style>
 </head>
@@ -20,14 +21,9 @@
 <script>
   mapboxgl.accessToken = 'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
-  /**
-   * FIX: To show Chukotka and Alaska without clipping, we allow the 
-   * longitude to go slightly past 180 degrees.
-   * To prevent "flipping" at the poles, we stop at 85 degrees.
-   */
   const bounds = [
-    [-205, -85.05], // Southwest: Covers Antarctica and Eastern Russia
-    [205, 85.05]    // Northeast: Covers the Arctic and Alaska
+    [-210, -85.05], 
+    [210, 85.05]
   ];
 
   const map = new mapboxgl.Map({
@@ -35,11 +31,13 @@
     style: 'mapbox://styles/mapbox/light-v11',
     projection: 'mercator',
     center: [0, 20],
-    zoom: 1,
-    minZoom: 0.8,    // Set minZoom so the map fits the screen nicely
+    // FIX: Increased minZoom ensures the map is wide enough to cover the screen 
+    // width without showing the white 'void' on most displays.
+    zoom: 1.5,
+    minZoom: 1.5, 
     maxZoom: 12,
-    renderWorldCopies: false, // STOPS horizontal scrolling/looping
-    maxBounds: bounds         // STOPS vertical flipping and edge-clipping
+    renderWorldCopies: false, 
+    maxBounds: bounds
   });
 
   const POLYGON_MAX_CLICK_ZOOM = 3;
@@ -58,7 +56,6 @@
         const res = await fetch(dataset.file);
         const geojson = await res.json();
 
-        // ----- SOURCES -----
         if (isPoint) {
           map.addSource(sourceId, {
             type: 'geojson',
@@ -74,7 +71,6 @@
           });
         }
 
-        // ----- LAYERS -----
         if (isPoint) {
           map.addLayer({
             id: `${sourceId}-clusters`,
@@ -115,7 +111,6 @@
 
           pointLayers.push(`${sourceId}-unclustered-point`);
 
-          // Interaction: Cluster Click
           map.on('click', `${sourceId}-clusters`, (e) => {
             const features = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] });
             if (!features.length) return;
@@ -126,7 +121,6 @@
             });
           });
 
-          // Interaction: Point Click
           map.on('click', `${sourceId}-unclustered-point`, (e) => {
             const f = e.features && e.features[0];
             if (!f) return;
