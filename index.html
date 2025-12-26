@@ -32,37 +32,94 @@
   });
 
   // Above this zoom, polygons stop reacting to clicks
-  const POLYGON_MAX_CLICK_ZOOM = 2;
+  const POLYGON_MAX_CLICK_ZOOM = 4;
 
   map.on('load', async () => {
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
 
-    const pointLayerIds = [];
+    // Track which layers are point layers (for yield logic)
+    const pointLayers = [];
 
     for (const dataset of manifest.datasets) {
       const sourceId = dataset.id;
+      const isPoint = dataset.geometryType === 'point';
+      const isPolygon = dataset.geometryType === 'polygon';
 
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
-      map.addSource(sourceId, {
-        type: 'geojson',
-        data: geojson
-      });
+      // --- SOURCES ---
+
+      if (isPoint) {
+        // WWII (or any point dataset) as a CLUSTERED source
+        map.addSource(sourceId, {
+          type: 'geojson',
+          data: geojson,
+          cluster: true,
+          clusterMaxZoom: 9,   // max zoom to cluster points
+          clusterRadius: 50    // cluster radius in pixels
+        });
+      } else {
+        // Polygons: normal, non‑cluster source
+        map.addSource(sourceId, {
+          type: 'geojson',
+          data: geojson
+        });
+      }
 
       console.log('LOADED', sourceId, geojson);
 
-      const isPoint = dataset.geometryType === 'point';
-      const baseLayerId = `${sourceId}-layer`;
+      // --- LAYERS ---
 
       if (isPoint) {
-        // POINTS: fixed radius like standard Mapbox examples
-        // (no zoom-based scaling, just a clear constant size)
+        // 1) CLUSTER CIRCLES
         map.addLayer({
-          id: baseLayerId,
+          id: `${sourceId}-clusters`,
           type: 'circle',
           source: sourceId,
+          filter: ['has', 'point_count'],
+          paint: {
+            // Standard Mapbox cluster colors & sizes
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6', 10,
+              '#f1f075', 30,
+              '#f28cb1'
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              15, 10,
+              20, 30,
+              25
+            ]
+          }
+        });
+
+        // 2) CLUSTER COUNT LABEL
+        map.addLayer({
+          id: `${sourceId}-cluster-count`,
+          type: 'symbol',
+          source: sourceId,
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['get', 'point_count_abbreviated'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12
+          },
+          paint: {
+            'text-color': '#000000'
+          }
+        });
+
+        // 3) UNCLUSTERED INDIVIDUAL POINTS
+        map.addLayer({
+          id: `${sourceId}-unclustered-point`,
+          type: 'circle',
+          source: sourceId,
+          filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-radius': 8,
             'circle-color': '#000000',
@@ -72,9 +129,33 @@
           }
         });
 
-        pointLayerIds.push(baseLayerId);
+        // Register unclustered‑point layer for polygon yield logic
+        pointLayers.push(`${sourceId}-unclustered-point`);
 
-        map.on('click', baseLayerId, (e) => {
+        // --- POINT INTERACTIONS ---
+
+        // Click cluster to zoom in and expand
+        map.on('click', `${sourceId}-clusters`, (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [`${sourceId}-clusters`]
+          });
+          if (!features.length) return;
+
+          const clusterId = features[0].properties.cluster_id;
+          map.getSource(sourceId).getClusterExpansionZoom(
+            clusterId,
+            (err, zoom) => {
+              if (err) return;
+              map.easeTo({
+                center: features[0].geometry.coordinates,
+                zoom: zoom
+              });
+            }
+          );
+        });
+
+        // Popup for individual (unclustered) point
+        map.on('click', `${sourceId}-unclustered-point`, (e) => {
           const f = e.features && e.features[0];
           if (!f) return;
 
@@ -98,15 +179,24 @@
             .addTo(map);
         });
 
-        map.on('mouseenter', baseLayerId, () => {
+        // Cursor hints
+        map.on('mouseenter', `${sourceId}-clusters`, () => {
           map.getCanvas().style.cursor = 'pointer';
         });
-        map.on('mouseleave', baseLayerId, () => {
+        map.on('mouseleave', `${sourceId}-clusters`, () => {
+          map.getCanvas().style.cursor = '';
+        });
+        map.on('mouseenter', `${sourceId}-unclustered-point`, () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', `${sourceId}-unclustered-point`, () => {
           map.getCanvas().style.cursor = '';
         });
 
-      } else {
-        // POLYGONS: context; clickable only at low zoom and when no point is hit
+      } else if (isPolygon) {
+        const baseLayerId = `${sourceId}-fill`;
+
+        // POLYGON FILL
         map.addLayer({
           id: baseLayerId,
           type: 'fill',
@@ -130,6 +220,7 @@
           }
         });
 
+        // POLYGON OUTLINE
         map.addLayer({
           id: `${sourceId}-outline`,
           type: 'line',
@@ -140,19 +231,17 @@
           }
         });
 
+        // Polygon popup that yields to points and to high zoom
         map.on('click', baseLayerId, (e) => {
-          // 1) Ignore when zoomed in
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
-          // 2) If a point is under the click, let that handler run instead
-          if (pointLayerIds.length > 0) {
+          if (pointLayers.length > 0) {
             const nearbyPoints = map.queryRenderedFeatures(e.point, {
-              layers: pointLayerIds
+              layers: pointLayers
             });
             if (nearbyPoints.length > 0) return;
           }
 
-          // 3) Show polygon popup
           const f = e.features && e.features[0];
           if (!f) return;
 
