@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>The Here — Fixed Flat World</title>
+  <title>Flat World — One Earth View</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
@@ -18,7 +18,6 @@
     }
   </style>
 </head>
-
 <body>
 <div id="map"></div>
 
@@ -29,25 +28,18 @@ mapboxgl.accessToken =
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v11',
-  projection: 'equirectangular',     // flat map
-  center: [0, 20],
+  projection: 'equirectangular',   // flat, not globe
+  renderWorldCopies: false,        // world shown only once
+  center: [0, 25],                 // centered on visible Earth
   zoom: 1.3,
   minZoom: 1,
-  maxZoom: 8,
-  boxZoom: false,
+  maxZoom: 6,
   dragRotate: false,
-  pitchWithRotate: false,
-  interactive: true,
-  renderWorldCopies: false            // disables repeating world wrap
+  pitchWithRotate: false
 });
 
-// Restrict panning so the world stays visible once
+// Freeze panning beyond the visible rectangle
 map.setMaxBounds([[-180, -60], [180, 85]]);
-
-// Optional: add zoom & rotation controls
-map.addControl(new mapboxgl.NavigationControl());
-
-// You can now add your sources & layers here (test.geojson, wwi_theaters.geojson).
 </script>
 </body>
 </html>
