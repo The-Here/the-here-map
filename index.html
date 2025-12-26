@@ -37,78 +37,176 @@ map.on('load', async () => {
   const manifest = await (await fetch('manifest.json')).json();
 
   for (const dataset of manifest.datasets) {
-    if (dataset.geometryType !== 'polygon') continue;
 
-    const sourceId = dataset.id;
-    const geojson = await (await fetch(dataset.file)).json();
+    /* =========================
+       POLYGONS
+    ========================= */
+    if (dataset.geometryType === 'polygon') {
 
-    map.addSource(sourceId, {
-      type: 'geojson',
-      data: geojson
-    });
+      const sourceId = dataset.id;
+      const geojson = await (await fetch(dataset.file)).json();
 
-    const fillId = `${sourceId}-fill`;
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: geojson
+      });
 
-    map.addLayer({
-      id: fillId,
-      type: 'fill',
-      source: sourceId,
-      paint: {
-        'fill-color': [
-          'interpolate',
-          ['linear'],
-          ['get', 'intensity'],
-          1, '#fee2e2',
-          3, '#f97373',
-          5, '#7f1d1d'
-        ],
-        'fill-opacity': [
-          'interpolate',
-          ['linear'],
-          ['get', 'intensity'],
-          1, 0.15,
-          5, 0.6
-        ]
-      }
-    });
+      const fillId = `${sourceId}-fill`;
 
-    map.addLayer({
-      id: `${sourceId}-outline`,
-      type: 'line',
-      source: sourceId,
-      paint: {
-        'line-color': '#111827',
-        'line-width': 0.5
-      }
-    });
+      map.addLayer({
+        id: fillId,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, '#fee2e2',
+            3, '#f97373',
+            5, '#7f1d1d'
+          ],
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, 0.15,
+            5, 0.6
+          ]
+        }
+      });
 
-    map.on('click', fillId, (e) => {
-      if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
+      map.addLayer({
+        id: `${sourceId}-outline`,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': '#111827',
+          'line-width': 0.5
+        }
+      });
 
-      const f = e.features?.[0];
-      if (!f) return;
+      map.on('click', fillId, (e) => {
+        if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
-      const p = f.properties || {};
-      const title = p.label || dataset.label || 'Area';
-      const dates =
-        p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
-      const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
+        const f = e.features?.[0];
+        if (!f) return;
 
-      new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(`<strong>${title}</strong><br>${dates}<br>${intensity}`)
-        .addTo(map);
-    });
+        const p = f.properties || {};
+        const title = p.label || dataset.label || 'Area';
+        const dates =
+          p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
+        const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
 
-    map.on('mouseenter', fillId, () => {
-      if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`<strong>${title}</strong><br>${dates}<br>${intensity}`)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', fillId, () => {
+        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
+          map.getCanvas().style.cursor = 'pointer';
+        }
+      });
+
+      map.on('mouseleave', fillId, () => {
+        map.getCanvas().style.cursor = '';
+      });
+    }
+
+    /* =========================
+       POINTS + CLUSTERS
+    ========================= */
+    if (dataset.geometryType === 'point') {
+
+      const sourceId = dataset.id;
+      const geojson = await (await fetch(dataset.file)).json();
+
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: geojson,
+        cluster: true,
+        clusterRadius: 50,
+        clusterMaxZoom: 5
+      });
+
+      map.addLayer({
+        id: `${sourceId}-clusters`,
+        type: 'circle',
+        source: sourceId,
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#e5e7eb',
+            10, '#9ca3af',
+            50, '#374151'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            12,
+            10, 18,
+            50, 26
+          ]
+        }
+      });
+
+      map.addLayer({
+        id: `${sourceId}-cluster-count`,
+        type: 'symbol',
+        source: sourceId,
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-size': 12
+        },
+        paint: {
+          'text-color': '#000'
+        }
+      });
+
+      map.addLayer({
+        id: `${sourceId}-points`,
+        type: 'circle',
+        source: sourceId,
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-radius': 4,
+          'circle-color': '#111827'
+        }
+      });
+
+      map.on('click', `${sourceId}-clusters`, (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: [`${sourceId}-clusters`]
+        });
+        if (!features.length) return;
+
+        const clusterId = features[0].properties.cluster_id;
+
+        map.getSource(sourceId).getClusterExpansionZoom(
+          clusterId,
+          (err, zoom) => {
+            if (err) return;
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom
+            });
+          }
+        );
+      });
+
+      map.on('mouseenter', `${sourceId}-clusters`, () => {
         map.getCanvas().style.cursor = 'pointer';
-      }
-    });
+      });
 
-    map.on('mouseleave', fillId, () => {
-      map.getCanvas().style.cursor = '';
-    });
+      map.on('mouseleave', `${sourceId}-clusters`, () => {
+        map.getCanvas().style.cursor = '';
+      });
+    }
   }
 });
 </script>
