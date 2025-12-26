@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>The Here — Flat Map & WWI Theaters</title>
+  <title>The Here — Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
@@ -127,3 +127,85 @@ map.on('load', async () => {
       });
 
       // Point popups
+      map.on('click', `${id}-unclustered-point`, (e) => {
+        const f = e.features && e.features[0];
+        if (!f) return;
+        const p = f.properties || {};
+        const html = `<strong>${p.label || label}</strong><br>${p.date || ''}`;
+        new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+      });
+
+      // Cursor changes
+      for (const l of [`${id}-clusters`, `${id}-unclustered-point`]) {
+        map.on('mouseenter', l, () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', l, () => map.getCanvas().style.cursor = '');
+      }
+    }
+
+    // ---------------- POLYGON DATASETS (theaters) ----------------
+    if (geometryType === 'polygon') {
+      map.addSource(id, { type: 'geojson', data: geojson });
+
+      // fill
+      map.addLayer({
+        id: `${id}-fill`,
+        type: 'fill',
+        source: id,
+        paint: {
+          'fill-color': [
+            'interpolate', ['linear'], ['get', 'intensity'],
+            1, '#fee2e2',
+            3, '#f97373',
+            5, '#7f1d1d'
+          ],
+          'fill-opacity': [
+            'interpolate', ['linear'], ['get', 'intensity'],
+            1, 0.15,
+            5, 0.6
+          ]
+        }
+      });
+
+      // outline
+      map.addLayer({
+        id: `${id}-outline`,
+        type: 'line',
+        source: id,
+        paint: { 'line-color': '#111827', 'line-width': 0.5 }
+      });
+
+      // Popup for polygons
+      map.on('click', `${id}-fill`, (e) => {
+        if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
+        const pts = map.queryRenderedFeatures(e.point, { layers: pointLayers });
+        if (pts.length) return;
+
+        const f = e.features && e.features[0];
+        if (!f) return;
+        const p = f.properties || {};
+        const title = p.label || p.theater_id || label;
+        const countries =
+          p.countries_1914 ||
+          p.countries_1915 ||
+          p.countries_1916 ||
+          p.countries_1917 ||
+          p.countries;
+        const html = `
+          <strong>${title}</strong><br>
+          ${p.start_date || ''} – ${p.end_date || ''}<br>
+          ${countries ? `Countries: ${countries}` : ''}
+        `;
+        new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+      });
+
+      map.on('mouseenter', `${id}-fill`, () => {
+        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM)
+          map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', `${id}-fill`, () => map.getCanvas().style.cursor = '');
+    }
+  }
+});
+</script>
+</body>
+</html>
