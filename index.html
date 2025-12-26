@@ -24,13 +24,13 @@
 <div id="map"></div>
 
 <script>
-  mapboxgl.accessToken = 
+  mapboxgl.accessToken =
     'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
-  // Define bounds: nearly world-wide, but not full wrap
+  // Add a bit of extra horizontal room on the right (e.g., +10°)
   const bounds = [
-    [-179.9, -85], // southwest corner
-    [179.9, 85]    // northeast corner
+    [-179.9, -85], // southwest
+    [190, 85]      // northeast: 10° beyond 180 for breathing space
   ];
 
   const map = new mapboxgl.Map({
@@ -42,7 +42,7 @@
     minZoom: 1,
     maxZoom: 12,
     renderWorldCopies: false,
-    maxBounds: bounds // <-- Constrain panning to prevent horizontal scroll
+    maxBounds: bounds
   });
 
   const POLYGON_MAX_CLICK_ZOOM = 3;
@@ -59,7 +59,6 @@
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
-      // SOURCES
       if (isPoint) {
         map.addSource(sourceId, {
           type: 'geojson',
@@ -72,7 +71,6 @@
         map.addSource(sourceId, { type: 'geojson', data: geojson });
       }
 
-      // LAYERS
       if (isPoint) {
         map.addLayer({
           id: `${sourceId}-clusters`,
@@ -105,7 +103,7 @@
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 12
           },
-          paint: {'text-color': '#000000'}
+          paint: { 'text-color': '#000000' }
         });
 
         map.addLayer({
@@ -124,7 +122,6 @@
 
         pointLayers.push(`${sourceId}-unclustered-point`);
 
-        // POINT INTERACTIONS
         map.on('click', `${sourceId}-clusters`, (e) => {
           const features = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] });
           if (!features.length) return;
