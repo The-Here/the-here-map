@@ -58,4 +58,60 @@ map.on('load', async () => {
           'interpolate',
           ['linear'],
           ['get', 'intensity'],
+          1, '#fee2e2',
+          3, '#f97373',
+          5, '#7f1d1d'
+        ],
+        'fill-opacity': [
+          'interpolate',
+          ['linear'],
+          ['get', 'intensity'],
+          1, 0.15,
+          5, 0.6
+        ]
+      }
+    });
 
+    map.addLayer({
+      id: `${sourceId}-outline`,
+      type: 'line',
+      source: sourceId,
+      paint: {
+        'line-color': '#111827',
+        'line-width': 0.5
+      }
+    });
+
+    map.on('click', fillId, (e) => {
+      if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
+
+      const f = e.features?.[0];
+      if (!f) return;
+
+      const p = f.properties || {};
+      const title = p.label || dataset.label || 'Area';
+      const dates =
+        p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
+      const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
+
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`<strong>${title}</strong><br>${dates}<br>${intensity}`)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', fillId, () => {
+      if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
+        map.getCanvas().style.cursor = 'pointer';
+      }
+    });
+
+    map.on('mouseleave', fillId, () => {
+      map.getCanvas().style.cursor = '';
+    });
+  }
+});
+</script>
+
+</body>
+</html>
