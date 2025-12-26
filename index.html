@@ -38,9 +38,9 @@ map.on('load', async () => {
 
   for (const dataset of manifest.datasets) {
 
-    /* =========================
+    /* ===============================
        POLYGONS
-    ========================= */
+    =============================== */
     if (dataset.geometryType === 'polygon') {
 
       const sourceId = dataset.id;
@@ -51,10 +51,8 @@ map.on('load', async () => {
         data: geojson
       });
 
-      const fillId = `${sourceId}-fill`;
-
       map.addLayer({
-        id: fillId,
+        id: `${sourceId}-fill`,
         type: 'fill',
         source: sourceId,
         paint: {
@@ -86,38 +84,26 @@ map.on('load', async () => {
         }
       });
 
-      map.on('click', fillId, (e) => {
+      map.on('click', `${sourceId}-fill`, (e) => {
         if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-
         const f = e.features?.[0];
         if (!f) return;
 
         const p = f.properties || {};
-        const title = p.label || dataset.label || 'Area';
-        const dates =
-          p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
-        const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
-
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
-          .setHTML(`<strong>${title}</strong><br>${dates}<br>${intensity}`)
+          .setHTML(
+            `<strong>${p.label || dataset.label || 'Area'}</strong><br>
+             ${p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : ''}
+             ${p.intensity ? `<br>Intensity: ${p.intensity}` : ''}`
+          )
           .addTo(map);
-      });
-
-      map.on('mouseenter', fillId, () => {
-        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
-
-      map.on('mouseleave', fillId, () => {
-        map.getCanvas().style.cursor = '';
       });
     }
 
-    /* =========================
-       POINTS + CLUSTERS
-    ========================= */
+    /* ===============================
+       POINTS + CLUSTERS (BLOBS)
+    =============================== */
     if (dataset.geometryType === 'point') {
 
       const sourceId = dataset.id;
@@ -127,30 +113,27 @@ map.on('load', async () => {
         type: 'geojson',
         data: geojson,
         cluster: true,
-        clusterRadius: 50,
+        clusterRadius: 60,
         clusterMaxZoom: 5
       });
 
+      /* ---- CLUSTERS (still blobs) ---- */
       map.addLayer({
         id: `${sourceId}-clusters`,
         type: 'circle',
         source: sourceId,
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': [
-            'step',
-            ['get', 'point_count'],
-            '#e5e7eb',
-            10, '#9ca3af',
-            50, '#374151'
-          ],
           'circle-radius': [
             'step',
             ['get', 'point_count'],
-            12,
-            10, 18,
-            50, 26
-          ]
+            22,
+            10, 32,
+            50, 44
+          ],
+          'circle-color': '#6b7280',
+          'circle-opacity': 0.35,
+          'circle-blur': 0.6
         }
       });
 
@@ -168,14 +151,37 @@ map.on('load', async () => {
         }
       });
 
+      /* ---- SINGLE EVENTS = BLOBS ---- */
       map.addLayer({
         id: `${sourceId}-points`,
         type: 'circle',
         source: sourceId,
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-radius': 4,
-          'circle-color': '#111827'
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, 14,
+            3, 24,
+            5, 36
+          ],
+          'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, '#fee2e2',
+            3, '#f97373',
+            5, '#7f1d1d'
+          ],
+          'circle-opacity': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            1, 0.25,
+            5, 0.6
+          ],
+          'circle-blur': 1.0
         }
       });
 
@@ -197,14 +203,6 @@ map.on('load', async () => {
             });
           }
         );
-      });
-
-      map.on('mouseenter', `${sourceId}-clusters`, () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', `${sourceId}-clusters`, () => {
-        map.getCanvas().style.cursor = '';
       });
     }
   }
