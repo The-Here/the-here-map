@@ -4,34 +4,48 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css' rel='stylesheet' />
     <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        #console { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; z-index: 1; }
     </style>
 </head>
 <body>
+    <div id='console'>
+        <div id='status'>Loading...</div>
+        <div id='features'>Features: 0</div>
+    </div>
     <div id='map'></div>
     <script>
-        mapboxgl.accessToken = 'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ'; // Replace with your token
+        mapboxgl.accessToken = 'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
         
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v11', // Light flat style
-            center: [-98, 39], // Center on US or your data bounds
-            zoom: 4,
-            pitch: 0 // Flat, no globe tilt
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-98, 39], // US center
+            zoom: 3, // Start zoomed out to see clusters
+            pitch: 0
         });
 
         map.on('load', () => {
-            // Load your GeoJSON with clustering
             map.addSource('events', {
                 type: 'geojson',
-                data: './test.geojson', // Your clustering data
+                data: './test.geojson',
                 cluster: true,
                 clusterMaxZoom: 14,
-                clusterRadius: 75 // Matches iOS example
+                clusterRadius: 75
             });
 
-            // 1. Clustered circles (main clusters)
+            // DEBUG: Check data loaded
+            map.on('sourcedata', (e) => {
+                if (e.sourceId === 'events' && e.isSourceLoaded) {
+                    const source = map.getSource('events');
+                    const features = source._data ? source._data.features.length : 0;
+                    document.getElementById('features').textContent = `Features: ${features}`;
+                    document.getElementById('status').textContent = 'Data loaded!';
+                }
+            });
+
+            // Clusters layer (FORCE VISIBLE)
             map.addLayer({
                 id: 'clusters',
                 type: 'circle',
@@ -39,19 +53,20 @@
                 filter: ['has', 'point_count'],
                 paint: {
                     'circle-color': [
-                        'step',
-                        ['get', 'point_count'],
-                        '#51bbd6', 100,  '#f1f075', 750, '#f28cb1'
+                        'step', ['get', 'point_count'], 
+                        '#51bbd6', 100, '#f1f075', 750, '#f28cb1'
                     ],
                     'circle-radius': [
-                        'step',
-                        ['get', 'point_count'],
-                        20, 100, 30, 750, 40
-                    ]
+                        'step', ['get', 'point_count'], 
+                        25, 100, 35, 750, 50
+                    ],
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#fff',
+                    'circle-opacity': 0.9
                 }
             });
 
-            // 2. Cluster count labels
+            // Count labels
             map.addLayer({
                 id: 'cluster-count',
                 type: 'symbol',
@@ -59,15 +74,13 @@
                 filter: ['has', 'point_count'],
                 layout: {
                     'text-field': ['get', 'point_count_abbreviated'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12
+                    'text-font': ['Arial Black', 'Arial Bold'],
+                    'text-size': 14
                 },
-                paint: {
-                    'text-color': '#ffffff'
-                }
+                paint: { 'text-color': '#fff' }
             });
 
-            // 3. Unclustered individual points
+            // Single points
             map.addLayer({
                 id: 'unclustered-point',
                 type: 'circle',
@@ -75,45 +88,24 @@
                 filter: ['!', ['has', 'point_count']],
                 paint: {
                     'circle-color': '#11b4da',
-                    'circle-radius': 4,
-                    'circle-stroke-width': 1,
+                    'circle-radius': 6,
+                    'circle-stroke-width': 2,
                     'circle-stroke-color': '#fff'
                 }
             });
         });
 
-        // Click cluster to zoom/expand
+        // Cluster click
         map.on('click', 'clusters', (e) => {
             const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
             const clusterId = features[0].properties.cluster_id;
-            map.getSource('events').getClusterExpansionZoom(
-                clusterId,
-                (err, zoom) => {
-                    if (err) return;
-                    map.easeTo({
-                        center: features[0].geometry.coordinates,
-                        zoom: zoom
-                    });
-                }
-            );
+            map.getSource('events').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                if (!err) map.easeTo({ center: features[0].geometry.coordinates, zoom });
+            });
         });
 
-        // Hover cursor
-        map.on('mouseenter', 'clusters', () => {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'clusters', () => {
-            map.getCanvas().style.cursor = '';
-        });
-
-        // Optional: Click unclustered point popup
-        map.on('click', 'unclustered-point', (e) => {
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`Event at ${coordinates[1].toFixed(4)}, ${coordinates[0].toFixed(4)}`)
-                .addTo(map);
-        });
+        map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
     </script>
 </body>
 </html>
