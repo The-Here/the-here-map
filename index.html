@@ -10,8 +10,11 @@
 
   <style>
     html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
     #map { position: absolute; inset: 0; }
   </style>
@@ -27,15 +30,76 @@
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v11',
-    projection: 'globe', // 🌍 full Earth, no cuts
-    center: [180, 65],   // shows both Alaska and Chukotka
-    zoom: 1.2
+    projection: 'globe',          // 🌍 show full Earth
+    center: [180, 65],            // places Alaska + Chukotka both in view
+    zoom: 1.3,
+    minZoom: 1,
+    maxZoom: 12,
+    renderWorldCopies: false      // prevents endless wrapping
   });
 
+  // Add gentle lighting/fog for a realistic Earth
   map.on('style.load', () => {
-    map.setFog({}); // nice atmospheric glow
+    map.setFog({ color: 'rgb(200, 200, 200)', 'horizon-blend': 0.3 });
   });
-</script>
 
-</body>
-</html>
+  const POLYGON_MAX_CLICK_ZOOM = 3;
+
+  map.on('load', async () => {
+    const manifestRes = await fetch('manifest.json');
+    const manifest = await manifestRes.json();
+    const pointLayers = [];
+
+    for (const dataset of manifest.datasets) {
+      const sourceId = dataset.id;
+      const isPoint = dataset.geometryType === 'point';
+      const isPolygon = dataset.geometryType === 'polygon';
+      const res = await fetch(dataset.file);
+      const geojson = await res.json();
+
+      // Add GeoJSON source
+      map.addSource(sourceId, isPoint
+        ? {
+            type: 'geojson',
+            data: geojson,
+            cluster: true,
+            clusterMaxZoom: 9,
+            clusterRadius: 50
+          }
+        : { type: 'geojson', data: geojson }
+      );
+
+      // Point layers (clusters + unclustered points)
+      if (isPoint) {
+        map.addLayer({
+          id: `${sourceId}-clusters`,
+          type: 'circle',
+          source: sourceId,
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6', 10,
+              '#f1f075', 30,
+              '#f28cb1'
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              15, 10,
+              20, 30,
+              25
+            ]
+          }
+        });
+
+        map.addLayer({
+          id: `${sourceId}-cluster-count`,
+          type: 'symbol',
+          source: sourceId,
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['get', 'point_count_abbreviated'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            '
