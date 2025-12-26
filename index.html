@@ -31,16 +31,16 @@
     maxZoom: 12
   });
 
-  // Above this zoom, polygons are NOT clickable (points stay clickable)
+  // Zoom threshold: above this, polygons are not clickable
   const POLYGON_MAX_CLICK_ZOOM = 5;
 
   map.on('load', async () => {
-    // manifest.json must sit next to index.html
-    const manifestRes = await fetch('./manifest.json');
+    const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
 
     for (const dataset of manifest.datasets) {
       const sourceId = dataset.id;
+
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
@@ -49,11 +49,13 @@
         data: geojson
       });
 
+      console.log('LOADED', sourceId, geojson);
+
       const isPoint = dataset.geometryType === 'point';
       const baseLayerId = `${sourceId}-layer`;
 
       if (isPoint) {
-        // POINT LAYER (always clickable)
+        // POINTS: always clickable
         map.addLayer({
           id: baseLayerId,
           type: 'circle',
@@ -64,6 +66,7 @@
           }
         });
 
+        // Point interactions
         map.on('click', baseLayerId, (e) => {
           const f = e.features && e.features[0];
           if (!f) return;
@@ -96,7 +99,7 @@
         });
 
       } else {
-        // POLYGON LAYER (context)
+        // POLYGONS: context; clickable only at low zoom
         map.addLayer({
           id: baseLayerId,
           type: 'fill',
@@ -130,7 +133,7 @@
           }
         });
 
-        // Polygon popup ONLY when zoomed OUT
+        // Polygon interactions: only when zoomed OUT
         map.on('click', baseLayerId, (e) => {
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
@@ -152,7 +155,9 @@
             p.countries_1917 ||
             p.countries;
 
-          const countriesText = countries ? `Areas: ${countries}` : '';
+          const countriesText = countries
+            ? `Areas: ${countries}`
+            : '';
 
           const html = `
             <strong>${title}</strong><br>
