@@ -1,103 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Events Clusters</title>
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        #console { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); 
+                   padding: 10px; z-index: 1; font-family: monospace; font-size: 12px; }
     </style>
 </head>
 <body>
-<div id="map"></div>
+    <div id='console'>
+        <div id='status'>Loading manifest.geojson...</div>
+        <div id='features'>Features: 0</div>
+        <div id='bounds'>Bounds: calculating...</div>
+    </div>
+    <div id='map'></div>
+    <script>
+        mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN_HERE'; // Replace this!
+        
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-98, 39], // Temporary - will auto-fit
+            zoom: 2, // Start very zoomed out
+            pitch: 0
+        });
 
-<script>
-mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN_HERE';
+        map.on('load', () => {
+            // Load YOUR manifest.geojson with clustering
+            map.addSource('events', {
+                type: 'geojson',
+                data: './manifest.geojson',  // CHANGED TO YOUR FILE
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50  // Smaller radius = more clusters
+            });
 
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11', // light, flat
-    projection: 'mercator', // ensures no globe
-    center: [-98, 39], // adjust to your area
-    zoom: 3
-});
+            // AUTO-FIT TO YOUR DATA BOUNDS (this fixes everything)
+            map.on('sourcedata', (e) => {
+                if (e.sourceId === 'events' && e.isSourceLoaded) {
+                    const source = map.getSource('events');
+                    const features = source._data ? source._data.features : [];
+                    document.getElementById('features').textContent = `Features: ${features.length}`;
+                    document.getElementById('status').textContent = 'Data loaded - adding layers...';
+                    
+                    if (features.length > 0) {
+                        // Calculate bounds from YOUR data
+                        const bounds = new mapboxgl.LngLatBounds();
+                        features.forEach(f => {
+                            if (f.geometry && f.geometry.coordinates) {
+                                bounds.extend(f.geometry.coordinates);
+                            }
+                        });
+                        map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
+                        document.getElementById('bounds').textContent = `Bounds: ${bounds.toArray()}`;
+                    }
+                }
+            });
 
-map.on('load', () => {
-    map.addSource('events', {
-        type: 'geojson',
-        data: './events/test.geojson',  // <-- note the correct folder path
-        cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 60
-    });
+            // CLUSTER LAYER - BIGGER & BRIGHTER
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'events',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': [
+                        'step', ['get', 'point_count'], 
+                        '#1E90FF', 10, '#FFD700', 50, '#FF4500'
+                    ],
+                    'circle-radius': [
+                        'step', ['get', 'point_count'], 
+                        30, 10, 45, 50, 60
+                    ],
+                    'circle-stroke-width': 3,
+                    'circle-stroke-color': '#FFFFFF',
+                    'circle-opacity': 0.95
+                }
+            });
 
-    // Cluster circles
-    map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'events',
-        filter: ['has', 'point_count'],
-        paint: {
-            'circle-color': [
-                'step',
-                ['get', 'point_count'],
-                '#51bbd6', 100, '#f1f075', 750, '#f28cb1'
-            ],
-            'circle-radius': [
-                'step',
-                ['get', 'point_count'],
-                20, 100, 30, 750, 40
-            ],
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#fff'
-        }
-    });
+            // WHITE COUNT LABELS
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'events',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': ['get', 'point_count_abbreviated'],
+                    'text-font': ['Arial Black', 'Arial Bold'],
+                    'text-size': 16,
+                    'text-anchor': 'center'
+                },
+                paint: { 
+                    'text-color': '#FFFFFF',
+                    'text-halo-color': '#000000',
+                    'text-halo-width': 2
+                }
+            });
 
-    // Cluster counts
-    map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'events',
-        filter: ['has', 'point_count'],
-        layout: {
-            'text-field': ['get', 'point_count_abbreviated'],
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12
-        },
-        paint: { 'text-color': '#ffffff' }
-    });
+            // SINGLE POINTS (blue dots)
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'events',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#1E90FF',
+                    'circle-radius': 8,
+                    'circle-stroke-width': 3,
+                    'circle-stroke-color': '#FFFFFF'
+                }
+            });
+        });
 
-    // Individual points
-    map.addLayer({
-        id: 'unclustered-point',
-        type: 'circle',
-        source: 'events',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 5,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#ffffff'
-        }
-    });
-});
+        // CLICK CLUSTER TO ZOOM
+        map.on('click', 'clusters', (e) => {
+            const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+            const clusterId = features[0].properties.cluster_id;
+            map.getSource('events').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                if (!err) {
+                    map.easeTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom
+                    });
+                }
+            });
+        });
 
-// Click cluster to zoom in
-map.on('click', 'clusters', (e) => {
-    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-    if (!features.length) return;
-    const clusterId = features[0].properties.cluster_id;
-    map.getSource('events').getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (!err)
-            map.easeTo({ center: features[0].geometry.coordinates, zoom });
-    });
-});
-
-map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
-</script>
-
+        map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+    </script>
 </body>
 </html>
