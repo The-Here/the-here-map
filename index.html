@@ -32,7 +32,7 @@
   });
 
   // Above this zoom, polygons stop reacting to clicks
-  const POLYGON_MAX_CLICK_ZOOM = 3;
+  const POLYGON_MAX_CLICK_ZOOM = 2;
 
   map.on('load', async () => {
     const manifestRes = await fetch('manifest.json');
