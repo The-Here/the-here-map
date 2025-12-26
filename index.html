@@ -32,13 +32,13 @@
   });
 
   // Above this zoom, polygons stop reacting to clicks
-  const POLYGON_MAX_CLICK_ZOOM = 3;
+  const POLYGON_MAX_CLICK_ZOOM = 4;
 
   map.on('load', async () => {
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
 
-    // Unclustered point layers, so polygons can "yield"
+    // Unclustered point layers so polygons can yield to them
     const pointLayers = [];
 
     for (const dataset of manifest.datasets) {
@@ -51,7 +51,7 @@
 
       // ----- SOURCES -----
       if (isPoint) {
-        // clustered source for test points
+        // clustered source for point datasets (test)
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson,
@@ -60,7 +60,7 @@
           clusterRadius: 50
         });
       } else {
-        // non-clustered source for polygons
+        // normal source for polygons (wwi_theaters)
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson
@@ -111,7 +111,7 @@
           }
         });
 
-        // 3) unclustered points
+        // 3) unclustered single points
         map.addLayer({
           id: `${sourceId}-unclustered-point`,
           type: 'circle',
@@ -173,7 +173,7 @@
             .addTo(map);
         });
 
-        // cursors
+        // cursors for clusters and single points
         map.on('mouseenter', `${sourceId}-clusters`, () => {
           map.getCanvas().style.cursor = 'pointer';
         });
@@ -225,7 +225,7 @@
           }
         });
 
-        // polygon popup: only at low zoom, and only if no point is under click
+        // polygon popup: only at low zoom, and only if no point under click
         map.on('click', fillId, (e) => {
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
