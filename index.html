@@ -39,15 +39,6 @@
     maxBounds: [[-200, -85], [200, 85]]
   });
 
-  // Add some extra right-side padding
-  map.once('load', () => {
-    // Equivalent to leaving visual whitespace on right
-    map.easeTo({
-      center: [0, 20],
-      padding: { right: 200 } // 200px gap on right side
-    });
-  });
-
   const POLYGON_MAX_CLICK_ZOOM = 3;
 
   map.on('load', async () => {
