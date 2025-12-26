@@ -1,1 +1,126 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "a1",
+        "label": "Store A",
+        "intensity": 3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-77.032, 38.913]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "a2",
+        "label": "Store B",
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.414, 37.776]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "b1",
+        "label": "Store C",
+        "intensity": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-87.629, 41.878]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "b2",
+        "label": "Store D",
+        "intensity": 4
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.935, 40.730]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "c1",
+        "label": "Store E",
+        "intensity": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-95.369, 29.760]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "c2",
+        "label": "Store F",
+        "intensity": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.243, 34.052]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "c3",
+        "label": "Store G",
+        "intensity": 3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-104.990, 39.739]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "c4",
+        "label": "Store H",
+        "intensity": 4
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-80.191, 25.761]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "d1",
+        "label": "Store I",
+        "intensity": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-112.074, 33.448]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "d2",
+        "label": "Store J",
+        "intensity": 5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-71.058, 42.360]
+      }
+    }
+  ]
+}
 
