@@ -10,7 +10,7 @@
 
   <style>
     body { margin: 0; padding: 0; }
-    #map { position: absolute; inset: 0; }
+    #map { position: absolute; inset: 0; background-color: #f8f8f8; }
   </style>
 </head>
 <body>
@@ -20,11 +20,11 @@
 <script>
   mapboxgl.accessToken = 'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
-  // Define bounds to prevent horizontal scrolling and stop at the poles
-  // [West, South, East, North]
+  // Widen longitude to 210/-210 to ensure Chukotka/Alaska don't clip
+  // Latitude 85.05 is the maximum limit of Mercator projection
   const bounds = [
-    [-180, -85], // Southwest coordinates
-    [180, 85]    // Northeast coordinates
+    [-210, -85.05], // Southwest: Includes Antarctica and Eastern Russia
+    [210, 85.05]    // Northeast: Includes the Arctic and Alaska
   ];
 
   const map = new mapboxgl.Map({
@@ -33,10 +33,10 @@
     projection: 'mercator',
     center: [0, 20],
     zoom: 1,
-    minZoom: 1,
+    minZoom: 0.5,
     maxZoom: 12,
-    renderWorldCopies: false, // Prevents horizontal looping
-    maxBounds: bounds         // Locks the map within the specified lat/lng box
+    renderWorldCopies: false, // Essential: prevents horizontal repeating
+    maxBounds: bounds         // Locks the view so you can't scroll into the void
   });
 
   const POLYGON_MAX_CLICK_ZOOM = 3;
@@ -163,7 +163,7 @@
         }
       }
     } catch (err) {
-      console.error("Error loading manifest or datasets:", err);
+      console.error("Error loading data:", err);
     }
   });
 </script>
