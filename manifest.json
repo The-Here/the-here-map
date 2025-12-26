@@ -10,7 +10,7 @@
     },
     {
       "id": "test",
-      "label": "World",
+      "label": "Clustering Test",
       "file": "events/test.geojson",
       "format": "geojson",
       "geometryType": "point"
