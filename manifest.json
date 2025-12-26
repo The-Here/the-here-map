@@ -10,8 +10,8 @@
     },
     {
       "id": "test",
-      "label": "World War II",
-      "file": "events/wwii_1939_1945.geojson",
+      "label": "World",
+      "file": "events/test.geojson",
       "format": "geojson",
       "geometryType": "point"
     }
