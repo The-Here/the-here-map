@@ -38,17 +38,12 @@ map.on('load', async () => {
 
   for (const dataset of manifest.datasets) {
 
-    /* =========================
-       POLYGONS
-    ========================= */
+    /* ---------- POLYGONS ---------- */
     if (dataset.geometryType === 'polygon') {
       const sourceId = dataset.id;
       const geojson = await (await fetch(dataset.file)).json();
 
-      map.addSource(sourceId, {
-        type: 'geojson',
-        data: geojson
-      });
+      map.addSource(sourceId, { type: 'geojson', data: geojson });
 
       const fillId = `${sourceId}-fill`;
 
@@ -87,38 +82,18 @@ map.on('load', async () => {
 
       map.on('click', fillId, (e) => {
         if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-
         const f = e.features?.[0];
         if (!f) return;
 
         const p = f.properties || {};
-        const title = p.label || dataset.label || 'Area';
-        const dates =
-          p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
-        const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
-
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
-          .setHTML(`<strong>${title}</strong><br>${dates}<br>${intensity}`)
+          .setHTML(`<strong>${p.label || 'Area'}</strong>`)
           .addTo(map);
-      });
-
-      map.on('mouseenter', fillId, () => {
-        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
-
-      map.on('mouseleave', fillId, () => {
-        map.getCanvas().style.cursor = '';
       });
     }
 
-    /* =========================
-       POINTS + CLUSTERS (BLOBS ONLY)
-       - clusters are circles
-       - single points are ALSO circles, same style family (no tiny dots)
-    ========================= */
+    /* ---------- POINTS = BLOBS ONLY ---------- */
     if (dataset.geometryType === 'point') {
       const sourceId = dataset.id;
       const geojson = await (await fetch(dataset.file)).json();
@@ -131,33 +106,27 @@ map.on('load', async () => {
         clusterMaxZoom: 5
       });
 
-      // CLUSTER BLOBS
+      /* clusters */
       map.addLayer({
         id: `${sourceId}-clusters`,
         type: 'circle',
         source: sourceId,
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': [
-            'step',
-            ['get', 'point_count'],
-            '#e5e7eb',
-            10, '#9ca3af',
-            50, '#374151'
-          ],
+          'circle-color': '#9ca3af',
           'circle-radius': [
             'step',
             ['get', 'point_count'],
             12,
             10, 18,
             50, 26
-          ],
-          'circle-opacity': 0.85
+          ]
         }
       });
 
+      /* cluster count */
       map.addLayer({
-        id: `${sourceId}-cluster-count`,
+        id: `${sourceId}-count`,
         type: 'symbol',
         source: sourceId,
         filter: ['has', 'point_count'],
@@ -165,53 +134,34 @@ map.on('load', async () => {
           'text-field': '{point_count_abbreviated}',
           'text-size': 12
         },
-        paint: {
-          'text-color': '#000'
-        }
+        paint: { 'text-color': '#000' }
       });
 
-      // SINGLE EVENTS AS BLOBS (NOT DOTS)
+      /* single points — SAME BLOBS */
       map.addLayer({
-        id: `${sourceId}-single-blobs`,
+        id: `${sourceId}-single`,
         type: 'circle',
         source: sourceId,
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-color': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['get', 'intensity'], 1],
-            1, '#e5e7eb',
-            3, '#9ca3af',
-            5, '#374151'
-          ],
-          'circle-radius': 12,
-          'circle-opacity': 0.85
+          'circle-color': '#9ca3af',
+          'circle-radius': 12
         }
       });
 
       map.on('click', `${sourceId}-clusters`, (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
+        const f = map.queryRenderedFeatures(e.point, {
           layers: [`${sourceId}-clusters`]
-        });
-        if (!features.length) return;
+        })[0];
+        if (!f) return;
 
-        const clusterId = features[0].properties.cluster_id;
-
-        map.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, zoom) => {
-          if (err) return;
-          map.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom
-          });
-        });
-      });
-
-      map.on('mouseenter', `${sourceId}-clusters`, () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', `${sourceId}-clusters`, () => {
-        map.getCanvas().style.cursor = '';
+        map.getSource(sourceId).getClusterExpansionZoom(
+          f.properties.cluster_id,
+          (err, zoom) => {
+            if (err) return;
+            map.easeTo({ center: f.geometry.coordinates, zoom });
+          }
+        );
       });
     }
   }
