@@ -123,16 +123,25 @@
           }
         });
 
-        map.addLayer({
-          id: `${sourceId}-outline`,
-          type: 'line',
-          source: sourceId,
-          paint: {
-            'line-color': '#111827',
-            'line-width': 0.5
-          }
-        });
-
+                map.addLayer({
+  id: baseLayerId,
+  type: 'circle',
+  source: sourceId,
+  paint: {
+    // Radius grows with zoom: small at z=1, bigger at z=8+
+    'circle-radius': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      1, 2,
+      3, 4,
+      6, 7,
+      8, 10
+    ],
+    'circle-color': '#000000',
+    'circle-opacity': 0.9
+  }
+});
         // Polygon interactions: only when zoomed OUT
         map.on('click', baseLayerId, (e) => {
           if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
