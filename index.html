@@ -27,20 +27,36 @@
   mapboxgl.accessToken =
     'pk.eyJ1Ijoibm9ydGhlZGRhIiwiYSI6ImNtYmVjczJ4cTFndnEycW42cnFwbjBjbzcifQ.XYvDSeoj0uD6K8WpK5v0mQ';
 
+  // Wider bounds that include all eastern Russia (Chukotka)
+  // Note: ±200 extends about 20° beyond the international date line
+  const bounds = [
+    [-200, -85], // southwest
+    [200, 85]    // northeast
+  ];
+
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v11',
     projection: 'mercator',
-    center: [0, 20],
-    zoom: 1,
+    center: [20, 40],       // slightly east-shifted center for global balance
+    zoom: 1.2,
     minZoom: 1,
     maxZoom: 12,
-    renderWorldCopies: false,
-    maxBounds: [[-200, -85], [200, 85]]
+    renderWorldCopies: false, // disables infinite wrap
+    maxBounds: bounds         // keeps full globe but locked horizontally
+  });
+
+  // Add right-hand visual breathing room (~10% of screen width)
+  map.once('load', () => {
+    const rightGap = window.innerWidth * 0.1;
+    map.easeTo({
+      padding: { right: rightGap }
+    });
   });
 
   const POLYGON_MAX_CLICK_ZOOM = 3;
 
+  // Same dynamic layer loader
   map.on('load', async () => {
     const manifestRes = await fetch('manifest.json');
     const manifest = await manifestRes.json();
@@ -53,18 +69,19 @@
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
-      if (isPoint) {
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geojson,
-          cluster: true,
-          clusterMaxZoom: 9,
-          clusterRadius: 50
-        });
-      } else {
-        map.addSource(sourceId, { type: 'geojson', data: geojson });
-      }
+      // Add GeoJSON sources
+      map.addSource(sourceId, isPoint
+        ? {
+            type: 'geojson',
+            data: geojson,
+            cluster: true,
+            clusterMaxZoom: 9,
+            clusterRadius: 50
+          }
+        : { type: 'geojson', data: geojson }
+      );
 
+      // Add layers by geometry type
       if (isPoint) {
         map.addLayer({
           id: `${sourceId}-clusters`,
@@ -97,7 +114,7 @@
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 12
           },
-          paint: { 'text-color': '#000000' }
+          paint: { 'text-color': '#000' }
         });
 
         map.addLayer({
@@ -107,31 +124,16 @@
           filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-radius': 8,
-            'circle-color': '#000000',
+            'circle-color': '#000',
             'circle-opacity': 0.9,
-            'circle-stroke-color': '#ffffff',
+            'circle-stroke-color': '#fff',
             'circle-stroke-width': 1
           }
         });
 
         pointLayers.push(`${sourceId}-unclustered-point`);
 
-        map.on('click', `${sourceId}-unclustered-point`, (e) => {
-          const f = e.features && e.features[0];
-          if (!f) return;
-          const p = f.properties || {};
-          const title = p.label || p.id || dataset.label || 'Event';
-          const dates = p.start_date && p.end_date
-            ? `${p.start_date} – ${p.end_date}`
-            : (p.date || '');
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`<strong>${title}</strong><br>${dates}`)
-            .addTo(map);
-        });
-      }
-
-      if (isPolygon) {
+      } else if (isPolygon) {
         const fillId = `${sourceId}-fill`;
         map.addLayer({
           id: fillId,
@@ -151,7 +153,6 @@
             ]
           }
         });
-
         map.addLayer({
           id: `${sourceId}-outline`,
           type: 'line',
