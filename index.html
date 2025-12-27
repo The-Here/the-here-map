@@ -246,6 +246,7 @@
               ? `${p.start_date} – ${p.end_date}`
               : '';
           const intensity = p.intensity ? `Intensity: ${p.intensity}` : '';
+          const killed = p.estimated_killed ? `Killed: ${p.estimated_killed.toLocaleString()}` : '';
 
           const countries =
             p.countries_1914 ||
@@ -254,13 +255,17 @@
             p.countries_1917 ||
             p.countries;
 
-          const countriesText = countries ? `Countries: ${countries}` : '';
+          const countriesText = countries ? `Countries: ${countries.join(', ')}` : '';
+
+          const wiki = p.wiki ? `<br><a href="${p.wiki}" target="_blank">Wikipedia</a>` : '';
 
           const html = `
             <strong>${title}</strong><br>
             ${dates}<br>
             ${intensity}<br>
+            ${killed}<br>
             ${countriesText}
+            ${wiki}
           `;
 
           new mapboxgl.Popup()
