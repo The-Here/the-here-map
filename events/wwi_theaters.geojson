@@ -15,7 +15,7 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 5,
-        "estimated_casualties": 3000000,
+        "estimated_killed": 3000000 people,
         "countries_1914": [
           "German Empire",
           "French Third Republic",
@@ -45,7 +45,7 @@
         "start_date": "1914-08-01",
         "end_date": "1917-12-31",
         "intensity": 4,
-        "estimated_casualties": 2500000,
+        "estimated_killed": 2500000 people,
         "countries_1914": [
           "German Empire",
           "Austro-Hungarian Empire",
@@ -73,7 +73,7 @@
         "start_date": "1915-05-23",
         "end_date": "1918-11-04",
         "intensity": 4,
-        "estimated_casualties": 1000000,
+        "estimated_killed": 1000000 people,
         "countries_1915": [
           "Kingdom of Italy",
           "Austro-Hungarian Empire"
@@ -98,7 +98,7 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 3,
-        "estimated_casualties": 800000,
+        "estimated_killed": 800000 people,
         "countries_1914": [
           "Kingdom of Serbia",
           "Kingdom of Montenegro",
@@ -127,7 +127,7 @@
         "start_date": "1915-04-25",
         "end_date": "1916-01-09",
         "intensity": 4,
-        "estimated_casualties": 400000,
+        "estimated_killed": 400000 people,
         "countries_1915": [
           "Ottoman Empire",
           "British Empire",
@@ -152,7 +152,7 @@
         "start_date": "1914-11-01",
         "end_date": "1918-10-31",
         "intensity": 3,
-        "estimated_casualties": 1200000,
+        "estimated_killed": 1200000 people,
         "countries_1914": [
           "Ottoman Empire",
           "British Empire",
@@ -182,7 +182,7 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 2,
-        "estimated_casualties": 300000,
+        "estimated_killed": 300000 people,
         "countries_1914": [
           "German East Africa",
           "British Empire",
@@ -211,7 +211,7 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 3,
-        "estimated_casualties": 400000,
+        "estimated_killed": 400000 people,
         "countries_1914": [
           "United Kingdom",
           "German Empire",
@@ -244,7 +244,7 @@
         "start_date": "1914-08-01",
         "end_date": "1918-11-11",
         "intensity": 2,
-        "estimated_casualties": 300000,
+        "estimated_killed": 300000 people,
         "countries_1914": [
           "United Kingdom",
           "French Third Republic",
@@ -293,7 +293,7 @@
         "start_date": "1916-07-01",
         "end_date": "1916-11-18",
         "intensity": 5,
-        "estimated_casualties": 300000,
+        "estimated_killed": 300000 people,
         "countries_1916": [
           "French Third Republic",
           "German Empire"
@@ -317,7 +317,7 @@
         "start_date": "1916-02-21",
         "end_date": "1916-12-18",
         "intensity": 5,
-        "estimated_casualties": 300000,
+        "estimated_killed": 300000 people,
         "countries_1916": [
           "French Third Republic",
           "German Empire"
@@ -341,7 +341,7 @@
         "start_date": "1917-07-31",
         "end_date": "1917-11-10",
         "intensity": 5,
-        "estimated_casualties": 250000,
+        "estimated_killed": 250000 people,
         "countries_1917": [
           "Belgium",
           "United Kingdom",
