@@ -55,14 +55,7 @@
           clusterMaxZoom: 9,
           clusterRadius: 50
         });
-      } else {
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geojson
-        });
-      }
 
-      if (isPoint) {
         map.addLayer({
           id: `${sourceId}-clusters`,
           type: 'circle',
@@ -166,19 +159,16 @@
           const title = p.label || p.theater_id || dataset.label || 'Area';
           const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
 
-          // Combined stats line
           const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
-          const casualties = p.estimated_killed ? `Fatalities: ${p.estimated_killed.toLocaleString()}` : '';
+          const casualties = p.estimated_killed ? `Casualties: ${p.estimated_killed.toLocaleString()}` : '';
           const statsLine = [intensity, casualties].filter(Boolean).join(', ');
 
-          // Countries list (no label)
           let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
           if (typeof countries === 'string') {
             countries = countries.split(',').map(c => c.trim());
           }
           const countriesList = Array.isArray(countries) && countries.length ? countries.join(', ') : '';
 
-          // Wikipedia as SEPARATE line
           const wiki = p.wiki ? `<br><a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
 
           const html = `
