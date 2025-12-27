@@ -153,7 +153,9 @@ map.on('load', async () => {
         const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
 
         const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
-        const killed = p.estimated_killed ? `Killed: ${p.estimated_killed} people` : '';
+        const killed = killedNum ? `Killed: ${killedNum.toLocaleString()} people` : '';
+
+        
         const statsLine = [intensity, killed].filter(Boolean).join(', ');
 
         let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
