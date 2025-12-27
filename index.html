@@ -7,8 +7,24 @@
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <style>
-    body { margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #map { position: absolute; inset: 0; }
+    
+    /* Timeline Controls */
+    #timeline {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      z-index: 1000; min-width: 400px; text-align: center;
+    }
+    #eras { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .era-btn {
+      padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 4px;
+      font-size: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .era-btn:hover, .era-btn.active { background: #37879d; color: white; border-color: #37879d; }
+    #slider-container { display: flex; align-items: center; gap: 10px; }
+    #slider { flex: 1; height: 6px; border-radius: 3px; }
+    #year-label { font-weight: 600; min-width: 80px; text-align: right; }
   </style>
 </head>
 <body>
@@ -26,9 +42,9 @@ const map = new mapboxgl.Map({
 });
 
 const POLYGON_MAX_CLICK_ZOOM = 3;
-let allPointLayers = [];  // LINE 25: FIXED
+let allPointLayers = [];
 
-// --- DATE FORMATTER: Ensures "1914-08-01" → "1914, Aug 1"
+// Date utilities
 function formatDate(isoDate) {
   if (!isoDate) return '';
   const [year, month, day] = isoDate.split('-');
@@ -37,63 +53,86 @@ function formatDate(isoDate) {
   return `${year}, ${m} ${parseInt(day)}`;
 }
 
-map.on('load', async () => {
-  const manifestRes = await fetch('manifest.json');
-  const manifest = await manifestRes.json();
-  const pointLayers = [];
-
-  // TIMELINE SETUP - LINE 102: ALL FIXED HERE
-  const MIN_YEAR = -3100;
-  const MAX_YEAR = 2000;
-  const TOTAL_SPAN = MAX_YEAR - MIN_YEAR;
+function parseYear(dateStr) {
+  if (!dateStr) return null;
+  const yearStr = dateStr.split('-')[0];
+  let year = parseInt(yearStr);
   
-  const timelineDiv = document.createElement('div');
-  timelineDiv.id = 'timeline';
-  timelineDiv.style.cssText = `position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 400px; text-align: center; font-family: sans-serif;`;
-  timelineDiv.innerHTML = `
-    <div style="font-weight: bold; margin-bottom: 10px;">Timeline</div>
-    <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap;">
-      <button class="era-btn" data-year="-3100">3100 BCE</button>
-      <button class="era-btn" data-year="-500">500 BCE</button>
-      <button class="era-btn" data-year="0">0 CE</button>
-      <button class="era-btn" data-year="1000">1000 CE</button>
-      <button class="era-btn" data-year="1900">1900</button>
-      <button class="era-btn" data-year="2000">2000</button>
-    </div>
-    <label>Year: <span id="year-label">3100 BCE</span></label><br>
-    <input id="year-slider" type="range" min="0" max="1000" value="0" step="1" style="width: 100%; margin-top: 5px;">
-  `;
-  document.body.appendChild(timelineDiv);
-
-  function updateTimeline(normalizedYear) {
-    const targetYear = Math.round(MIN_YEAR + normalizedYear * TOTAL_SPAN);  // LINE 102: FIXED FILTER
-    const yearFilter = ['<=', ['get', 'start_year'], targetYear];
-    
-    allPointLayers.forEach(layerId => {  // LINE 102: FIXED allPointLayers
-      const sourceId = layerId.split('-')[0];
-      ['clusters', 'cluster-count', 'unclustered-point'].forEach(suffix => {
-        const fullId = `${sourceId}-${suffix}`;
-        if (map.getLayer(fullId)) map.setFilter(fullId, yearFilter);
-      });
-    });
-    
-    document.getElementById('year-label').textContent = targetYear >= 0 ? `${targetYear} CE` : `${Math.abs(targetYear)} BCE`;
+  // Handle BCE (negative years or BCE suffix)
+  if (yearStr.startsWith('-') || dateStr.includes('BCE')) {
+    year = parseInt(yearStr);  // Already negative or make negative
   }
+  return year;
+}
 
-  document.getElementById('year-slider').addEventListener('input', (e) => updateTimeline(e.target.value / 1000));
+const MIN_YEAR = -3100;
+const MAX_YEAR = 2000;
+const TOTAL_SPAN = MAX_YEAR - MIN_YEAR;
+
+function applyTimelineFilter(targetYear) {
+  const yearFilter = ['<=', ['get', 'start_year'], targetYear];
+  
+  allPointLayers.forEach(layerId => {
+    const sourceId = layerId.split('-')[0];
+    ['clusters', 'cluster-count', 'unclustered-point'].forEach(suffix => {
+      const fullId = `${sourceId}-${suffix}`;
+      if (map.getLayer(fullId)) {
+        map.setFilter(fullId, yearFilter);
+      }
+    });
+  });
+}
+
+function updateYearLabel(targetYear) {
+  document.getElementById('year-label').textContent = 
+    targetYear >= 0 ? `${targetYear} CE` : `${Math.abs(targetYear)} BCE`;
+}
+
+map.on('load', async () => {
+  // Add timeline UI FIRST
+  const timelineHtml = `
+    <div id="timeline">
+      <div style="font-weight: bold; margin-bottom: 10px;">Timeline</div>
+      <div id="eras">
+        <button class="era-btn active" data-year="-3100">3100 BCE</button>
+        <button class="era-btn" data-year="-500">500 BCE</button>
+        <button class="era-btn" data-year="0">0 CE</button>
+        <button class="era-btn" data-year="1000">1000 CE</button>
+        <button class="era-btn" data-year="1900">1900</button>
+        <button class="era-btn" data-year="2000">2000</button>
+      </div>
+      <div id="slider-container">
+        <span id="year-label">3100 BCE</span>
+        <input id="slider" type="range" min="0" max="1000" value="0" step="1">
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', timelineHtml);
+
+  // Era buttons
   document.querySelectorAll('.era-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       const year = parseInt(btn.dataset.year);
       const normalized = (year - MIN_YEAR) / TOTAL_SPAN;
-      document.getElementById('year-slider').value = Math.round(normalized * 1000);
-      updateTimeline(normalized);
+      document.getElementById('slider').value = Math.round(normalized * 1000);
+      applyTimelineFilter(year);
+      updateYearLabel(year);
     });
   });
 
-  const style = document.createElement('style');
-  style.textContent = `.era-btn { padding: 4px 8px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 11px; } .era-btn:hover { background: #f0f0f0; }`;
-  document.head.appendChild(style);
-  // END TIMELINE SETUP
+  // Slider
+  document.getElementById('slider').addEventListener('input', (e) => {
+    const normalized = e.target.value / 1000;
+    const targetYear = Math.round(MIN_YEAR + normalized * TOTAL_SPAN);
+    applyTimelineFilter(targetYear);
+    updateYearLabel(targetYear);
+    document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+  });
+
+  const manifestRes = await fetch('manifest.json');
+  const manifest = await manifestRes.json();
 
   for (const dataset of manifest.datasets) {
     const sourceId = dataset.id;
@@ -103,18 +142,19 @@ map.on('load', async () => {
     const res = await fetch(dataset.file);
     const geojson = await res.json();
 
-    // LINE 74: FIXED ORDER - addSource FIRST
+    // FIXED: Add source FIRST, THEN process
     map.addSource(sourceId, {
       type: 'geojson',
       data: geojson,
       cluster: isPoint
     });
-    
-    // THEN process years
+
+    // FIXED: Parse years with BCE support (LINE 91-105)
     if (geojson.features) {
       geojson.features.forEach(f => {
-        if (f.properties.start_date) {
-          f.properties.start_year = parseInt(f.properties.start_date.split('-')[0]);  // LINE 74: FIXED parseInt
+        const startYear = parseYear(f.properties.start_date || f.properties.date);
+        if (startYear !== null) {
+          f.properties.start_year = startYear;
         }
       });
       map.getSource(sourceId).setData(geojson);
@@ -159,7 +199,7 @@ map.on('load', async () => {
         }
       });
 
-      allPointLayers.push(`${sourceId}-unclustered-point`);  // LINE 92: FIXED
+      allPointLayers.push(`${sourceId}-unclustered-point`);
 
       map.on('click', `${sourceId}-clusters`, (e) => {
         const f = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] })[0];
@@ -237,9 +277,9 @@ map.on('load', async () => {
       });
     }
   }
-  
-  // Initialize at 3100 BCE
-  updateTimeline(0);
+
+  // Initialize timeline at 3100 BCE
+  applyTimelineFilter(MIN_YEAR);
 });
 </script>
 </body>
