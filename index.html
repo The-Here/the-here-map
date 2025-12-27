@@ -10,7 +10,6 @@
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #map { position: absolute; inset: 0; }
     
-    /* Timeline Controls */
     #timeline {
       position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
       background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
@@ -44,7 +43,6 @@ const map = new mapboxgl.Map({
 const POLYGON_MAX_CLICK_ZOOM = 3;
 let allPointLayers = [];
 
-// Date utilities
 function formatDate(isoDate) {
   if (!isoDate) return '';
   const [year, month, day] = isoDate.split('-');
@@ -53,21 +51,8 @@ function formatDate(isoDate) {
   return `${year}, ${m} ${parseInt(day)}`;
 }
 
-function parseYear(dateStr) {
-  if (!dateStr) return null;
-  const yearStr = dateStr.split('-')[0];
-  let year = parseInt(yearStr);
-  
-  // Handle BCE (negative years or BCE suffix)
-  if (yearStr.startsWith('-') || dateStr.includes('BCE')) {
-    year = parseInt(yearStr);  // Already negative or make negative
-  }
-  return year;
-}
-
 const MIN_YEAR = -3100;
 const MAX_YEAR = 2000;
-const TOTAL_SPAN = MAX_YEAR - MIN_YEAR;
 
 function applyTimelineFilter(targetYear) {
   const yearFilter = ['<=', ['get', 'start_year'], targetYear];
@@ -89,7 +74,7 @@ function updateYearLabel(targetYear) {
 }
 
 map.on('load', async () => {
-  // Add timeline UI FIRST
+  // Timeline UI
   const timelineHtml = `
     <div id="timeline">
       <div style="font-weight: bold; margin-bottom: 10px;">Timeline</div>
@@ -101,9 +86,9 @@ map.on('load', async () => {
         <button class="era-btn" data-year="1900">1900</button>
         <button class="era-btn" data-year="2000">2000</button>
       </div>
-      <div id="slider-container">
+      <div style="display: flex; align-items: center; gap: 10px;">
         <span id="year-label">3100 BCE</span>
-        <input id="slider" type="range" min="0" max="1000" value="0" step="1">
+        <input id="slider" type="range" min="0" max="1000" value="0" step="1" style="flex: 1; height: 6px;">
       </div>
     </div>
   `;
@@ -115,7 +100,7 @@ map.on('load', async () => {
       document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const year = parseInt(btn.dataset.year);
-      const normalized = (year - MIN_YEAR) / TOTAL_SPAN;
+      const normalized = (year - MIN_YEAR) / (MAX_YEAR - MIN_YEAR);
       document.getElementById('slider').value = Math.round(normalized * 1000);
       applyTimelineFilter(year);
       updateYearLabel(year);
@@ -123,164 +108,4 @@ map.on('load', async () => {
   });
 
   // Slider
-  document.getElementById('slider').addEventListener('input', (e) => {
-    const normalized = e.target.value / 1000;
-    const targetYear = Math.round(MIN_YEAR + normalized * TOTAL_SPAN);
-    applyTimelineFilter(targetYear);
-    updateYearLabel(targetYear);
-    document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
-  });
-
-  const manifestRes = await fetch('manifest.json');
-  const manifest = await manifestRes.json();
-
-  for (const dataset of manifest.datasets) {
-    const sourceId = dataset.id;
-    const isPoint = dataset.geometryType === 'point';
-    const isPolygon = dataset.geometryType === 'polygon';
-
-    const res = await fetch(dataset.file);
-    const geojson = await res.json();
-
-    // FIXED: Add source FIRST, THEN process
-    map.addSource(sourceId, {
-      type: 'geojson',
-      data: geojson,
-      cluster: isPoint
-    });
-
-    // FIXED: Parse years with BCE support (LINE 91-105)
-    if (geojson.features) {
-      geojson.features.forEach(f => {
-        const startYear = parseYear(f.properties.start_date || f.properties.date);
-        if (startYear !== null) {
-          f.properties.start_year = startYear;
-        }
-      });
-      map.getSource(sourceId).setData(geojson);
-    }
-
-    if (isPoint) {
-      map.addLayer({
-        id: `${sourceId}-clusters`,
-        type: 'circle',
-        source: sourceId,
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 10, '#f1f075', 30, '#f28cb1'],
-          'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 30, 25]
-        }
-      });
-
-      map.addLayer({
-        id: `${sourceId}-cluster-count`,
-        type: 'symbol',
-        source: sourceId,
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 12
-        },
-        paint: { 'text-color': '#000000' }
-      });
-
-      map.addLayer({
-        id: `${sourceId}-unclustered-point`,
-        type: 'circle',
-        source: sourceId,
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#37879d',
-          'circle-opacity': 0.9,
-          'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 1
-        }
-      });
-
-      allPointLayers.push(`${sourceId}-unclustered-point`);
-
-      map.on('click', `${sourceId}-clusters`, (e) => {
-        const f = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] })[0];
-        if (!f) return;
-        const clusterId = f.properties.cluster_id;
-        map.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, zoom) => {
-          if (err) return;
-          map.easeTo({ center: f.geometry.coordinates, zoom });
-        });
-      });
-
-      map.on('click', `${sourceId}-unclustered-point`, (e) => {
-        const f = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-unclustered-point`] })[0];
-        if (!f) return;
-        const p = f.properties;
-        const title = p.label || p.id || dataset.label || 'Event';
-        const start = formatDate(p.start_date);
-        const end = formatDate(p.end_date);
-        const dates = start && end ? `${start} - ${end}` : (start || end || p.date || '');
-        const html = `<strong>${title}</strong><br>${dates}`;
-        new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
-      });
-
-    } else if (isPolygon) {
-      const fillId = `${sourceId}-fill`;
-
-      map.addLayer({
-        id: fillId,
-        type: 'fill',
-        source: sourceId,
-        paint: {
-          'fill-color': ['interpolate', ['linear'], ['get', 'intensity'], 1, '#fee2e2', 3, '#f97373', 5, '#7f1d1d'],
-          'fill-opacity': ['interpolate', ['linear'], ['get', 'intensity'], 1, 0.15, 5, 0.6]
-        }
-      });
-
-      map.addLayer({
-        id: `${sourceId}-outline`,
-        type: 'line',
-        source: sourceId,
-        paint: { 'line-color': '#111827', 'line-width': 0.5 }
-      });
-
-      map.on('click', fillId, (e) => {
-        if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
-
-        const f = map.queryRenderedFeatures(e.point, { layers: [fillId] })[0];
-        if (!f) return;
-
-        const p = f.properties;
-        const title = p.label || p.theater_id || dataset.label || 'Area';
-        const start = formatDate(p.start_date);
-        const end = formatDate(p.end_date);
-        const dates = start && end ? `${start} - ${end}` : (start || end || '');
-
-        const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
-        const killed = p.estimated_killed ? `killed: ${p.estimated_killed}` : '';
-        const statsLine = [intensity, killed].filter(Boolean).join(', ');
-
-        let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
-        if (typeof countries === 'string') countries = countries.split(',').map(c => c.trim());
-        const countriesList = Array.isArray(countries) && countries.length ? countries.join(', ') : '';
-        const wiki = p.wiki ? `<a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
-
-        const html = `
-          <div style="max-width: 280px; padding: 8px;">
-            <strong style="font-size: 14px;">${title}</strong><br>
-            ${dates ? dates + '<br>' : ''}
-            ${statsLine ? statsLine + '<br>' : ''}
-            ${countriesList ? countriesList : ''}
-            ${wiki}
-          </div>
-        `;
-        new mapboxgl.Popup({ offset: 15 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
-      });
-    }
-  }
-
-  // Initialize timeline at 3100 BCE
-  applyTimelineFilter(MIN_YEAR);
-});
-</script>
-</body>
-</html>
+  document.getElementById('slider').add
