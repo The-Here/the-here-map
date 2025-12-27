@@ -47,15 +47,15 @@
       const res = await fetch(dataset.file);
       const geojson = await res.json();
 
-      if (isPoint) {
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geojson,
-          cluster: true,
-          clusterMaxZoom: 9,
-          clusterRadius: 50
-        });
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: geojson,
+        cluster: isPoint
+      });
 
+      console.log('LOADED', sourceId, geojson);
+
+      if (isPoint) {
         map.addLayer({
           id: `${sourceId}-clusters`,
           type: 'circle',
