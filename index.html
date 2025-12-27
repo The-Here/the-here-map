@@ -27,6 +27,18 @@ const map = new mapboxgl.Map({
 
 const POLYGON_MAX_CLICK_ZOOM = 3;
 
+// --- DATE FORMATTER: Converts "1914-08-01" → "1914, August 1"
+function formatDate(isoDate) {
+  if (!isoDate) return '';
+  const [year, month, day] = isoDate.split('-');
+  const monthNames = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+  ];
+  const m = monthNames[parseInt(month) - 1];
+  return `${year}, ${m} ${parseInt(day)}`;
+}
+
 map.on('load', async () => {
   const manifestRes = await fetch('manifest.json');
   const manifest = await manifestRes.json();
@@ -105,7 +117,9 @@ map.on('load', async () => {
         if (!f) return;
         const p = f.properties;
         const title = p.label || p.id || dataset.label || 'Event';
-        const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : (p.date || '');
+        const start = formatDate(p.start_date);
+        const end = formatDate(p.end_date);
+        const dates = start && end ? `${start} – ${end}` : (start || end || p.date || '');
         const html = `<strong>${title}</strong><br>${dates}`;
         new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
       });
@@ -150,7 +164,9 @@ map.on('load', async () => {
 
         const p = f.properties;
         const title = p.label || p.theater_id || dataset.label || 'Area';
-        const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
+        const start = formatDate(p.start_date);
+        const end = formatDate(p.end_date);
+        const dates = start && end ? `${start} – ${end}` : (start || end || '');
 
         const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
         const killed = p.estimated_killed ? `killed: ${p.estimated_killed}` : '';
