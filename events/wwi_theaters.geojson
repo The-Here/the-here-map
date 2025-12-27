@@ -16,11 +16,12 @@
         "end_date": "1918-11-11",
         "intensity": 5,
         "estimated_casualties": 3000000,
-        "countries_1914":
+        "countries_1914": [
           "German Empire",
           "French Third Republic",
           "United Kingdom",
-          "Belgium",
+          "Belgium"
+],
         "wiki": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)" 
       },
       "geometry": {
@@ -45,10 +46,11 @@
         "end_date": "1917-12-31",
         "intensity": 4,
         "estimated_casualties": 2500000,
-        "countries_1914":
+        "countries_1914": [
           "German Empire",
           "Austro-Hungarian Empire",
-          "Russian Empire",
+          "Russian Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)"
       },
       "geometry": {
@@ -72,9 +74,10 @@
         "end_date": "1918-11-04",
         "intensity": 4,
         "estimated_casualties": 1000000,
-        "countries_1915":
+        "countries_1915": [
           "Kingdom of Italy",
-          "Austro-Hungarian Empire",
+          "Austro-Hungarian Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Italian_front_(World_War_I)"
       },
       "geometry": {
@@ -96,12 +99,13 @@
         "end_date": "1918-11-11",
         "intensity": 3,
         "estimated_casualties": 800000,
-        "countries_1914":
+        "countries_1914": [
           "Kingdom of Serbia",
           "Kingdom of Montenegro",
           "Austro-Hungarian Empire",
           "Kingdom of Bulgaria",
-          "Ottoman Empire",
+          "Ottoman Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Balkan_Front_(World_War_I)"
       },
       "geometry": {
@@ -124,10 +128,11 @@
         "end_date": "1916-01-09",
         "intensity": 4,
         "estimated_casualties": 400000,
-        "countries_1915":
+        "countries_1915": [
           "Ottoman Empire",
           "British Empire",
-          "France",
+          "France"
+],
         "wiki": "https://en.wikipedia.org/wiki/Gallipoli_campaign"
       },
       "geometry": {
@@ -148,10 +153,11 @@
         "end_date": "1918-10-31",
         "intensity": 3,
         "estimated_casualties": 1200000,
-        "countries_1914":
+        "countries_1914": [
           "Ottoman Empire",
           "British Empire",
-          "Russian Empire",
+          "Russian Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I"
       },
       "geometry": {
@@ -177,12 +183,13 @@
         "end_date": "1918-11-11",
         "intensity": 2,
         "estimated_casualties": 300000,
-        "countries_1914":
+        "countries_1914": [
           "German East Africa",
           "British Empire",
           "Belgian Congo",
           "Union of South Africa",
-          "Portuguese Empire",
+          "Portuguese Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/African_theatre_of_World_War_I"
       },
       "geometry": {
@@ -205,15 +212,17 @@
         "end_date": "1918-11-11",
         "intensity": 3,
         "estimated_casualties": 400000,
-        "countries_1914":
+        "countries_1914": [
           "United Kingdom",
           "German Empire",
-          "French Third Republic",
+          "French Third Republic"
+],
         "countries_1917": [
           "United Kingdom",
           "German Empire",
           "French Third Republic",
-          "United States",
+          "United States"
+],
         "wiki": "https://en.wikipedia.org/wiki/Naval_warfare_of_World_War_I"
       },
       "geometry": {
@@ -236,21 +245,23 @@
         "end_date": "1918-11-11",
         "intensity": 2,
         "estimated_casualties": 300000,
-        "countries_1914":
+        "countries_1914": [
+          "United Kingdom",
+          "French Third Republic",
+          "German Empire",
+          "Austro-Hungarian Empire",
+          "Ottoman Empire",
+          "Empire of Japan"
+],
+        "countries_1917": [
           "United Kingdom",
           "French Third Republic",
           "German Empire",
           "Austro-Hungarian Empire",
           "Ottoman Empire",
           "Empire of Japan",
-        "countries_1917":
-          "United Kingdom",
-          "French Third Republic",
-          "German Empire",
-          "Austro-Hungarian Empire",
-          "Ottoman Empire",
-          "Empire of Japan",
-          "United States",
+          "United States"
+],
         "wiki": "https://en.wikipedia.org/wiki/Naval_warfare_of_World_War_I"
       },
       "geometry": {
@@ -283,9 +294,10 @@
         "end_date": "1916-11-18",
         "intensity": 5,
         "estimated_casualties": 300000,
-        "countries_1916":
+        "countries_1916": [
           "French Third Republic",
-          "German Empire",
+          "German Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Battle_of_the_Somme"
       },
       "geometry": {
@@ -306,9 +318,10 @@
         "end_date": "1916-12-18",
         "intensity": 5,
         "estimated_casualties": 300000,
-        "countries_1916":
+        "countries_1916": [
           "French Third Republic",
-          "German Empire",
+          "German Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Battle_of_Verdun"
       },
       "geometry": {
@@ -329,10 +342,11 @@
         "end_date": "1917-11-10",
         "intensity": 5,
         "estimated_casualties": 250000,
-        "countries_1917":
+        "countries_1917": [
           "Belgium",
           "United Kingdom",
-          "German Empire",
+          "German Empire"
+],
         "wiki": "https://en.wikipedia.org/wiki/Battle_of_Passchendaele"
       },
       "geometry": {
