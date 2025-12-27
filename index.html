@@ -27,14 +27,11 @@ const map = new mapboxgl.Map({
 
 const POLYGON_MAX_CLICK_ZOOM = 3;
 
-// --- DATE FORMATTER: Converts "1914-08-01" → "1914, August 1"
+// --- DATE FORMATTER: "1914-08-01" → "1914, Aug 1"
 function formatDate(isoDate) {
   if (!isoDate) return '';
   const [year, month, day] = isoDate.split('-');
-  const monthNames = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
-  ];
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const m = monthNames[parseInt(month) - 1];
   return `${year}, ${m} ${parseInt(day)}`;
 }
@@ -57,8 +54,6 @@ map.on('load', async () => {
       data: geojson,
       cluster: isPoint
     });
-
-    console.log('LOADED', sourceId, geojson);
 
     if (isPoint) {
       map.addLayer({
@@ -112,22 +107,15 @@ map.on('load', async () => {
       });
 
       map.on('click', `${sourceId}-unclustered-point`, (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-unclustered-point`] });
-        const f = features[0];
+        const f = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-unclustered-point`] })[0];
         if (!f) return;
         const p = f.properties;
         const title = p.label || p.id || dataset.label || 'Event';
         const start = formatDate(p.start_date);
         const end = formatDate(p.end_date);
-        const dates = start && end ? `${start} – ${end}` : (start || end || p.date || '');
+        const dates = start && end ? `${start} - ${end}` : (start || end || p.date || '');
         const html = `<strong>${title}</strong><br>${dates}`;
         new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
-      });
-
-      ['clusters', 'unclustered-point'].forEach(type => {
-        const layerId = `${sourceId}-${type}`;
-        map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
-        map.on('mouseleave', layerId, () => map.getCanvas().style.cursor = '');
       });
 
     } else if (isPolygon) {
@@ -153,31 +141,22 @@ map.on('load', async () => {
       map.on('click', fillId, (e) => {
         if (map.getZoom() > POLYGON_MAX_CLICK_ZOOM) return;
 
-        if (pointLayers.length > 0) {
-          const nearbyPoints = map.queryRenderedFeatures(e.point, { layers: pointLayers });
-          if (nearbyPoints.length > 0) return;
-        }
-
-        const features = map.queryRenderedFeatures(e.point, { layers: [fillId] });
-        const f = features[0];
+        const f = map.queryRenderedFeatures(e.point, { layers: [fillId] })[0];
         if (!f) return;
 
         const p = f.properties;
         const title = p.label || p.theater_id || dataset.label || 'Area';
         const start = formatDate(p.start_date);
         const end = formatDate(p.end_date);
-        const dates = start && end ? `${start} – ${end}` : (start || end || '');
+        const dates = start && end ? `${start} - ${end}` : (start || end || '');
 
         const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
         const killed = p.estimated_killed ? `killed: ${p.estimated_killed}` : '';
         const statsLine = [intensity, killed].filter(Boolean).join(', ');
 
         let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
-        if (typeof countries === 'string') {
-          countries = countries.split(',').map(c => c.trim());
-        }
+        if (typeof countries === 'string') countries = countries.split(',').map(c => c.trim());
         const countriesList = Array.isArray(countries) && countries.length ? countries.join(', ') : '';
-
         const wiki = p.wiki ? `<a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
 
         const html = `
@@ -190,19 +169,7 @@ map.on('load', async () => {
           </div>
         `;
 
-        new mapboxgl.Popup({ offset: 15 })
-          .setLngLat(e.lngLat)
-          .setHTML(html)
-          .addTo(map);
-      });
-
-      map.on('mouseenter', fillId, () => {
-        if (map.getZoom() <= POLYGON_MAX_CLICK_ZOOM) {
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
-      map.on('mouseleave', fillId, () => {
-        map.getCanvas().style.cursor = '';
+        new mapboxgl.Popup({ offset: 15 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
       });
     }
   }
