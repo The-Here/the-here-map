@@ -51,7 +51,6 @@
 
       // ----- SOURCES -----
       if (isPoint) {
-        // clustered source for test points
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson,
@@ -60,7 +59,6 @@
           clusterRadius: 50
         });
       } else {
-        // non-clustered source for polygons
         map.addSource(sourceId, {
           type: 'geojson',
           data: geojson
@@ -236,10 +234,11 @@
             if (nearbyPoints.length > 0) return;
           }
 
-          const f = e.features && e.features[0];
+          const features = map.queryRenderedFeatures(e.point, { layers: [fillId] });
+          const f = features[0];
           if (!f) return;
 
-          const p = f.properties || {};
+          const p = f.properties;
           const title = p.label || p.theater_id || dataset.label || 'Area';
           const dates =
             p.start_date && p.end_date
@@ -253,9 +252,9 @@
             p.countries_1915 ||
             p.countries_1916 ||
             p.countries_1917 ||
-            p.countries;
+            p.countries || [];
 
-          const countriesText = countries ? `Countries: ${countries.join(', ')}` : '';
+          const countriesText = countries.length ? `Countries: ${countries.join(', ')}` : '';
 
           const wiki = p.wiki ? `<br><a href="${p.wiki}" target="_blank">Wikipedia</a>` : '';
 
@@ -264,8 +263,7 @@
             ${dates}<br>
             ${intensity}<br>
             ${killed}<br>
-            ${countriesText}
-            ${wiki}
+            ${countriesText}${wiki}
           `;
 
           new mapboxgl.Popup()
