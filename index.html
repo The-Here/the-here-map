@@ -19,7 +19,7 @@
     .era-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; font-size: 12px; cursor: pointer; }
     .era-btn:hover, .era-btn.active { background: #37879d; color: white; border-color: #37879d; }
     #slider { width: 100%; height: 6px; margin-top: 10px; }
-    #year-label { font-weight: 600; min-width: 80px; }
+    #year-label { font-weight: 600; }
   </style>
 </head>
 <body>
@@ -38,7 +38,7 @@ const map = new mapboxgl.Map({
 
 const POLYGON_MAX_CLICK_ZOOM = 3;
 let allPointLayers = [];
-let allPolygonLayers = [];  // ADDED FOR POLYGONS
+let allPolygonLayers = [];
 
 function formatDate(isoDate) {
   if (!isoDate) return '';
@@ -54,7 +54,7 @@ const MAX_YEAR = 2000;
 function applyTimelineFilter(targetYear) {
   const yearFilter = ['<=', ['get', 'start_year'], targetYear];
   
-  // Points
+  // Filter ALL points
   allPointLayers.forEach(layerId => {
     const sourceId = layerId.split('-')[0];
     ['clusters', 'cluster-count', 'unclustered-point'].forEach(suffix => {
@@ -63,12 +63,10 @@ function applyTimelineFilter(targetYear) {
     });
   });
   
-  // Polygons - FIXED THIS
-  allPolygonLayers.forEach(layerId => {
-    if (map.getLayer(layerId)) map.setFilter(layerId, yearFilter);
-    // Also filter outline
-    const sourceId = layerId.replace('-fill', '');
-    const outlineId = `${sourceId}-outline`;
+  // Filter ALL polygons - THIS WAS MISSING
+  allPolygonLayers.forEach(fillId => {
+    if (map.getLayer(fillId)) map.setFilter(fillId, yearFilter);
+    const outlineId = fillId.replace('-fill', '-outline');
     if (map.getLayer(outlineId)) map.setFilter(outlineId, yearFilter);
   });
 }
@@ -78,17 +76,15 @@ function updateYearLabel(targetYear) {
 }
 
 map.on('load', async () => {
-  // Timeline UI
   document.body.insertAdjacentHTML('beforeend', `
     <div id="timeline">
-      <div style="font-weight: bold; margin-bottom: 10px;">Timeline</div>
+      <div style="font-weight: bold; margin-bottom: 10px;">Timeline 3100 BCE → 2000 CE</div>
       <div id="eras">
         <button class="era-btn active" data-year="-3100">3100 BCE</button>
         <button class="era-btn" data-year="-500">500 BCE</button>
         <button class="era-btn" data-year="0">0 CE</button>
         <button class="era-btn" data-year="1000">1000 CE</button>
-        <button class="era-btn" data-year="1914">1914 WW1</button>
-        <button class="era-btn" data-year="2000">2000</button>
+        <button class="era-btn" data-year="2000">2000 CE</button>
       </div>
       <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
         <span id="year-label">3100 BCE</span>
@@ -97,7 +93,6 @@ map.on('load', async () => {
     </div>
   `);
 
-  // Era buttons
   document.querySelectorAll('.era-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
@@ -110,7 +105,6 @@ map.on('load', async () => {
     });
   });
 
-  // Slider
   document.getElementById('slider').addEventListener('input', (e) => {
     const normalized = e.target.value / 1000;
     const targetYear = Math.round(MIN_YEAR + normalized * (MAX_YEAR - MIN_YEAR));
@@ -136,13 +130,11 @@ map.on('load', async () => {
       cluster: isPoint
     });
 
-    // FIXED PARSING - WORKS WITH YOUR "1914-08-01" FORMAT
+    // PERFECT PARSING FOR YOUR "1914-08-01" format
     if (geojson.features) {
       geojson.features.forEach(f => {
         if (f.properties.start_date) {
           f.properties.start_year = parseInt(f.properties.start_date.substring(0, 4));
-        } else if (f.properties.date) {
-          f.properties.start_year = parseInt(f.properties.date.substring(0, 4));
         }
       });
       map.getSource(sourceId).setData(geojson);
@@ -198,7 +190,7 @@ map.on('load', async () => {
 
     } else if (isPolygon) {
       const fillId = `${sourceId}-fill`;
-      allPolygonLayers.push(fillId);  // FIXED - TRACK POLYGONS
+      allPolygonLayers.push(fillId);  // NOW TRACKS WW1 POLYGONS
 
       map.addLayer({
         id: fillId,
@@ -232,15 +224,7 @@ map.on('load', async () => {
         if (typeof countries === 'string') countries = countries.split(',').map(c => c.trim());
         const countriesList = Array.isArray(countries) && countries.length ? countries.join(', ') : '';
         const wiki = p.wiki ? `<a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
-        const html = `
-          <div style="max-width: 280px; padding: 8px;">
-            <strong style="font-size: 14px;">${title}</strong><br>
-            ${dates ? dates + '<br>' : ''}
-            ${statsLine ? statsLine + '<br>' : ''}
-            ${countriesList ? countriesList : ''}
-            ${wiki}
-          </div>
-        `;
+        const html = `<div style="max-width: 280px; padding: 8px;"><strong style="font-size: 14px;">${title}</strong><br>${dates ? dates + '<br>' : ''}${statsLine ? statsLine + '<br>' : ''}${countriesList ? countriesList : ''}${wiki}</div>`;
         new mapboxgl.Popup({ offset: 15 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
       });
     }
