@@ -160,7 +160,7 @@
           const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
 
           const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
-          const casualties = p.estimated_killed ? `casualties: ${p.estimated_killed.toLocaleString()}` : '';
+          const casualties = p.estimated_casualties? `casualties: ${p.estimated_casualties.toLocaleString()}` : '';
           const statsLine = [intensity, casualties].filter(Boolean).join(', ');
 
           let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
