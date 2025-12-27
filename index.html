@@ -15,11 +15,12 @@
       height: 25px; background: rgba(255,255,255,0.95); 
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000;
+      position: relative;
     }
     #slider { 
       width: 90%; height: 4px; margin: 0 20px; 
-      background: #ddd; border-radius: 2px; outline: none;
       -webkit-appearance: none; appearance: none;
+      background: #ddd; border-radius: 2px; outline: none;
     }
     #slider::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
@@ -29,10 +30,10 @@
     #year-label { 
       position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%);
       font-size: 13px; font-weight: 600; 
-      background: #37879d; color: white; padding: 6px 12px; 
-      border-radius: 20px; white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3); min-width: 40px; text-align: center;
-      pointer-events: none;
+      background: #37879d; color: white; padding: 4px 10px; 
+      border-radius: 15px; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
     }
   </style>
 </head>
@@ -73,6 +74,14 @@ function getYearFromSlider(value) {
   }
 }
 
+function getSliderFromYear(year) {
+  if (year < 0) {
+    return ((year - MIN_YEAR) / (0 - MIN_YEAR)) * 0.1;
+  } else {
+    return 0.1 + ((year / MAX_YEAR) * 0.9);
+  }
+}
+
 function applyTimelineFilter(targetYear) {
   const yearFilter = ['<=', ['get', 'start_year'], targetYear];
   
@@ -91,6 +100,17 @@ function applyTimelineFilter(targetYear) {
   });
 }
 
+function updateYearLabel(targetYear) {
+  const label = document.getElementById('year-label');
+  label.textContent = targetYear >= 0 ? `${targetYear}` : `${Math.abs(targetYear)} BCE`;
+  // Position follows slider thumb smoothly
+  const slider = document.getElementById('slider');
+  const thumbRect = slider.getBoundingClientRect();
+  const sliderRect = document.getElementById('timeline').getBoundingClientRect();
+  const thumbX = (targetYear < 0 ? 5 : 45 + (targetYear / 2000) * 50) + '%'; // Approximate thumb position
+  label.style.left = `calc(${thumbX} - 25px)`; // Center circle under thumb
+}
+
 map.on('load', async () => {
   document.body.insertAdjacentHTML('beforeend', `
     <div id="timeline">
@@ -100,19 +120,15 @@ map.on('load', async () => {
   `);
 
   const slider = document.getElementById('slider');
-  const yearLabel = document.getElementById('year-label');
-  
-  function updateYearDisplay() {
-    const normalized = slider.value / 1000;
+  slider.addEventListener('input', (e) => {
+    const normalized = e.target.value / 1000;
     const targetYear = getYearFromSlider(normalized);
-    yearLabel.textContent = targetYear >= 0 ? `${targetYear}` : `${Math.abs(targetYear)} BCE`;
     applyTimelineFilter(targetYear);
-  }
+    updateYearLabel(targetYear);
+  });
 
-  slider.addEventListener('input', updateYearDisplay);
-  
-  // Initial update
-  updateYearDisplay();
+  // Initial position
+  updateYearLabel(1900);
 
   const manifestRes = await fetch('manifest.json');
   const manifest = await manifestRes.json();
@@ -239,6 +255,8 @@ map.on('load', async () => {
       });
     }
   }
+
+  applyTimelineFilter(1900);
 });
 </script>
 </body>
