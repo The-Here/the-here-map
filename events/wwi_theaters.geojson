@@ -16,13 +16,13 @@
         "end_date": "1918-11-11",
         "intensity": 5,
         "estimated_killed": 3000000,
-"wiki_ref": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)",
         "countries_1914": [
           "German Empire",
           "French Third Republic",
           "United Kingdom",
           "Belgium"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Western_Front_(World_War_I)" 
       },
       "geometry": {
         "type": "Polygon",
@@ -50,7 +50,8 @@
           "German Empire",
           "Austro-Hungarian Empire",
           "Russian Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Eastern_Front_(World_War_I)"
       },
       "geometry": {
         "type": "Polygon",
@@ -76,7 +77,8 @@
         "countries_1915": [
           "Kingdom of Italy",
           "Austro-Hungarian Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Italian_front_(World_War_I)"
       },
       "geometry": {
         "type": "Polygon",
@@ -103,7 +105,8 @@
           "Austro-Hungarian Empire",
           "Kingdom of Bulgaria",
           "Ottoman Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Balkan_Front_(World_War_I)"
       },
       "geometry": {
         "type": "Polygon",
@@ -129,7 +132,8 @@
           "Ottoman Empire",
           "British Empire",
           "France"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Gallipoli_campaign"
       },
       "geometry": {
         "type": "Polygon",
@@ -153,7 +157,8 @@
           "Ottoman Empire",
           "British Empire",
           "Russian Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Middle_Eastern_theatre_of_World_War_I"
       },
       "geometry": {
         "type": "Polygon",
@@ -184,7 +189,8 @@
           "Belgian Congo",
           "Union of South Africa",
           "Portuguese Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/African_theatre_of_World_War_I"
       },
       "geometry": {
         "type": "Polygon",
@@ -216,7 +222,8 @@
           "German Empire",
           "French Third Republic",
           "United States"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Naval_warfare_of_World_War_I"
       },
       "geometry": {
         "type": "Polygon",
@@ -254,7 +261,8 @@
           "Ottoman Empire",
           "Empire of Japan",
           "United States"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Naval_warfare_of_World_War_I"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -289,7 +297,8 @@
         "countries_1916": [
           "French Third Republic",
           "German Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Battle_of_the_Somme"
       },
       "geometry": {
         "type": "Polygon",
@@ -312,7 +321,8 @@
         "countries_1916": [
           "French Third Republic",
           "German Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Battle_of_Verdun"
       },
       "geometry": {
         "type": "Polygon",
@@ -336,7 +346,8 @@
           "Belgium",
           "United Kingdom",
           "German Empire"
-        ]
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Battle_of_Passchendaele"
       },
       "geometry": {
         "type": "Polygon",
