@@ -27,12 +27,12 @@ const map = new mapboxgl.Map({
 
 const POLYGON_MAX_CLICK_ZOOM = 3;
 
-// --- DATE FORMATTER: "1914-08-01" → "1914, Aug 1"
+// --- DATE FORMATTER: Ensures "1914-08-01" → "1914, Aug 1"
 function formatDate(isoDate) {
   if (!isoDate) return '';
   const [year, month, day] = isoDate.split('-');
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const m = monthNames[parseInt(month) - 1];
+  const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const m = shortMonths[parseInt(month) - 1];
   return `${year}, ${m} ${parseInt(day)}`;
 }
 
@@ -97,12 +97,12 @@ map.on('load', async () => {
       pointLayers.push(`${sourceId}-unclustered-point`);
 
       map.on('click', `${sourceId}-clusters`, (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] });
-        if (!features.length) return;
-        const clusterId = features[0].properties.cluster_id;
+        const f = map.queryRenderedFeatures(e.point, { layers: [`${sourceId}-clusters`] })[0];
+        if (!f) return;
+        const clusterId = f.properties.cluster_id;
         map.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err) return;
-          map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+          map.easeTo({ center: f.geometry.coordinates, zoom });
         });
       });
 
@@ -168,7 +168,6 @@ map.on('load', async () => {
             ${wiki}
           </div>
         `;
-
         new mapboxgl.Popup({ offset: 15 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
       });
     }
