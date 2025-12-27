@@ -152,11 +152,8 @@ map.on('load', async () => {
         const title = p.label || p.theater_id || dataset.label || 'Area';
         const dates = p.start_date && p.end_date ? `${p.start_date} – ${p.end_date}` : '';
 
-       const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
-const killed = p.estimated_killed ? `Killed: ${p.estimated_killed}` : '';
-
-
-        
+        const intensity = p.intensity ? `Intensity ${p.intensity}` : '';
+        const killed = p.estimated_killed ? `Killed: ${p.estimated_killed}` : '';
         const statsLine = [intensity, killed].filter(Boolean).join(', ');
 
         let countries = p.countries_1914 || p.countries_1915 || p.countries_1916 || p.countries_1917 || p.countries || [];
@@ -165,7 +162,7 @@ const killed = p.estimated_killed ? `Killed: ${p.estimated_killed}` : '';
         }
         const countriesList = Array.isArray(countries) && countries.length ? countries.join(', ') : '';
 
-        const wiki = p.wiki ? <a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
+        const wiki = p.wiki ? `<br><a href="${p.wiki}" target="_blank" style="color: #1e40af;">Wikipedia</a>` : '';
 
         const html = `
           <div style="max-width: 280px; padding: 8px;">
